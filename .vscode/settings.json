@@ -1,0 +1,15 @@
+{
+    "zowe.settings.version": 2,
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.black-formatter"
+    },
+    "python.formatting.provider": "none",
+    "cSpell.words": [
+        "Connexion",
+        "dans",
+        "identifiant",
+        "signin",
+        "sourcery",
+        "Votre"
+    ]
+}

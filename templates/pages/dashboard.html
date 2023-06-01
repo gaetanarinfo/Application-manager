@@ -1,0 +1,501 @@
+{% include 'base.html' %} {% load static %} {% include 'side-nav.html' %} {% load poll_extras %}
+<style>
+  .timeline-none {
+    margin-bottom: 0;
+    padding: 0;
+  }
+
+  .timeline-none li {
+    position: relative;
+    display: block;
+    font-size: 15px;
+    font-weight: 500;
+    padding-left: 0;
+    font-weight: bold;
+  }
+</style>
+
+<main
+  class="main-content position-relative max-height-vh-100 h-100 border-radius-lg"
+>
+  {% include 'navbar.html' %}
+
+  <div class="container-fluid py-4">
+    {% if staffUser == True %}
+    <div class="row">
+      <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+        <div class="card">
+          <div class="card-body p-3">
+            <div class="row">
+              <div class="col-8">
+                <div class="numbers">
+                  <p class="text-sm mb-0 text-capitalize font-weight-bold">
+                    Projets
+                  </p>
+                  <h5 class="font-weight-bolder mb-0">{{ counterProjets }}</h5>
+                </div>
+              </div>
+              <div class="col-4 text-end">
+                <div
+                  class="icon icon-shape bg-gradient-primary shadow text-center border-radius-md"
+                >
+                  <i
+                    class="ni ni-money-coins text-lg opacity-10"
+                    aria-hidden="true"
+                  ></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+        <div class="card">
+          <div class="card-body p-3">
+            <div class="row">
+              <div class="col-8">
+                <div class="numbers">
+                  <p class="text-sm mb-0 text-capitalize font-weight-bold">
+                    Utilisateurs
+                  </p>
+                  <h5 class="font-weight-bolder mb-0">
+                    {{ userProjetsCount }}
+                  </h5>
+                </div>
+              </div>
+              <div class="col-4 text-end">
+                <div
+                  class="icon icon-shape bg-gradient-primary shadow text-center border-radius-md"
+                >
+                  <i
+                    class="ni ni-world text-lg opacity-10"
+                    aria-hidden="true"
+                  ></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+        <div class="card">
+          <div class="card-body p-3">
+            <div class="row">
+              <div class="col-8">
+                <div class="numbers">
+                  <p class="text-sm mb-0 text-capitalize font-weight-bold">
+                    Site internet
+                  </p>
+                  <h5 class="font-weight-bolder mb-0">{{ websiteCount }}</h5>
+                </div>
+              </div>
+              <div class="col-4 text-end">
+                <div
+                  class="icon icon-shape bg-gradient-primary shadow text-center border-radius-md"
+                >
+                  <i
+                    class="ni ni-paper-diploma text-lg opacity-10"
+                    aria-hidden="true"
+                  ></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-xl-3 col-sm-6">
+        <div class="card">
+          <div class="card-body p-3">
+            <div class="row">
+              <div class="col-8">
+                <div class="numbers">
+                  <p class="text-sm mb-0 text-capitalize font-weight-bold">
+                    Qonto
+                  </p>
+                  <h5 class="font-weight-bolder mb-0">{{ balanceQonto }} €</h5>
+                </div>
+              </div>
+              <div class="col-4 text-end">
+                <div
+                  class="icon icon-shape bg-gradient-primary shadow text-center border-radius-md"
+                >
+                  <i
+                    class="ni ni-cart text-lg opacity-10"
+                    aria-hidden="true"
+                  ></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endif %} {% if staffUser == True %}
+    <div class="row my-4">
+      <div class="col-lg-8 col-md-12 mb-md-0 mb-4">
+        <div class="card">
+          <div class="card-header pb-0">
+            <div class="row">
+              <div class="col-lg-6 col-7">
+                <h6>Projets</h6>
+                <p class="text-sm mb-0">
+                  <i class="fa fa-check text-info" aria-hidden="true"></i>
+                  <span class="font-weight-bold ms-1"
+                    >{{ counterProjets }}</span
+                  >
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="card-body px-0 pb-2">
+            <div class="table-responsive">
+              <table class="table align-items-center mb-0">
+                <thead>
+                  <tr>
+                    <th
+                      class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"
+                    >
+                      Nom
+                    </th>
+                    <th
+                      class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2"
+                    >
+                      Catégorie
+                    </th>
+                    <th
+                      class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2"
+                    >
+                      Participants
+                    </th>
+                    <th
+                      class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"
+                    >
+                      Budget
+                    </th>
+                    <th
+                      class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"
+                    >
+                      Avancé du projet
+                    </th>
+                    <th
+                      class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"
+                    >
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for projet in projets %}
+                  <tr>
+                    <td>
+                      <div class="d-flex px-2 py-1">
+                        <div>
+                          {% if projet.categorie == "template" %}
+                          <img
+                            src="{% static 'img/small-logos/logo-slack.svg' %}"
+                            class="avatar avatar-sm me-3"
+                            alt="{{ projet.title }}"
+                          />
+                          {% else %}
+                          <img
+                            src="{% static 'img/small-logos/icon-sun-cloud.png' %}"
+                            class="avatar avatar-sm me-3"
+                            alt="{{ projet.title }}"
+                          />
+                          {% endif %}
+                        </div>
+                        <div class="d-flex flex-column justify-content-center">
+                          <h6 class="mb-0 text-sm">{{ projet.title }}</h6>
+                        </div>
+                      </div>
+                    </td>
+                    <td>
+                      <span class="text-sm font-weight-bold"
+                        >{{ projet.categorie }}
+                      </span>
+                    </td>
+                    <td>
+                      <div class="avatar-group mt-2">
+                        <a
+                          role="button"
+                          class="avatar avatar-xs rounded-circle"
+                          data-bs-toggle="tooltip"
+                          data-bs-placement="bottom"
+                          title="{{ projet.author }}"
+                        >
+                          <img
+                            src="{% static 'img/' %}{{ projet.author }}.jpg"
+                            alt="{{ projet.author }}"
+                          />
+                        </a>
+                      </div>
+                    </td>
+                    <td class="align-middle text-center text-sm">
+                      <span class="text-xs font-weight-bold">
+                        {% if projet.budget <= 0 %}
+                        <span>Gratuit</span>
+                        {% else %}
+                        <span>{{ projet.budget }} €</span>
+                        {% endif %}
+                      </span>
+                    </td>
+                    <td class="align-middle">
+                      <div class="progress-wrapper w-75 mx-auto">
+                        <div class="progress-info">
+                          <div class="progress-percentage">
+                            <span class="text-xs font-weight-bold"
+                              >{{ projet.avancement }}%</span
+                            >
+                          </div>
+                        </div>
+                        <div class="progress">
+                          <div
+                            class="progress-bar bg-gradient-info w-{{ projet.avancement }}"
+                            role="progressbar"
+                            aria-valuenow="{{ projet.avancement }}"
+                            aria-valuemin="0"
+                            aria-valuemax="100"
+                          ></div>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="align-middle">
+                      <div>
+                        {% if projet.categorie == "template" %}
+                        <a
+                          class="btn btn-primary btn-sm"
+                          target="_blank"
+                          href="{{ projet.url }}"
+                          >Voir</a
+                        >
+                        {% else %}
+                        <a
+                          class="btn btn-primary btn-sm"
+                          target="_blank"
+                          href="https://portfolio-gaetan.fr/applications/{{ projet.url }}"
+                          >Voir</a
+                        >
+                        {% endif %}
+                      </div>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-4 col-md-6">
+        <div class="card h-100">
+          <div class="card-header pb-0">
+            <h6>Aperçu des dépenses</h6>
+          </div>
+          <div class="card-body p-3">
+            {% for value in qontoList %}
+
+            <div class="timeline timeline-one-side">
+              <div class="timeline-block mb-3">
+                <span class="timeline-step">
+                  <i class="ni ni-shop text-info text-gradient"></i>
+                </span>
+                <div class="timeline-content">
+                  <h6 class="text-dark text-sm font-weight-bold mb-0">
+                    {{ value.label }}
+                    <span class="badge bg-gradient-dark"
+                      >{{ value.amount }} €</span
+                    >
+                  </h6>
+                  <p class="text-secondary font-weight-bold text-xs mt-1 mb-0">
+                    {% if value.side == "credit" %}<span class="text-info"
+                      >Crédit</span
+                    >{% else %}<span class="text-danger font-weight-bold">
+                      Débit</span
+                    >{% endif %}
+                  </p>
+                  <p class="text-secondary font-weight-bold text-xs mt-1 mb-0">
+                    {% if value.operation_type == "card" %}
+                    <span>Carte</span>
+                    {% elif value.operation_type == "income" %}
+                    <span>Revenu</span>
+                    {% else %}
+                    <span>Transfert</span>
+                    {% endif %}
+                  </p>
+                  <p class="text-secondary font-weight-bold text-xs mt-1 mb-0">
+                    {{ value.settled_at|parse }}
+                  </p>
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row my-4">
+      <div class="col-lg-12 col-md-12 mb-md-0 mb-4">
+        <div class="card">
+          <div class="card-header pb-0">
+            <h6>GitHub</h6>
+            <p class="text-sm mb-0">
+              <i class="fa fa-check text-info" aria-hidden="true"></i>
+              <span class="font-weight-bold ms-1">{{ githubsCount }}</span>
+            </p>
+          </div>
+          <div class="card-body px-0 pb-2">
+            <div class="table-responsive">
+              <table class="table align-items-center mb-0">
+                <thead>
+                  <tr>
+                    <th
+                      class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"
+                    >
+                      Nom
+                    </th>
+                    <th
+                      class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"
+                    >
+                      Participants
+                    </th>
+                    <th
+                      class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2"
+                    >
+                      Langage
+                    </th>
+                    <th
+                      class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2"
+                    >
+                      Vues
+                    </th>
+                    <th
+                      class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"
+                    >
+                      Forks
+                    </th>
+                    <th
+                      class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"
+                    >
+                      Branch
+                    </th>
+                    <th
+                      class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"
+                    >
+                      Status
+                    </th>
+                    <th
+                      class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"
+                    >
+                      Update
+                    </th>
+                    <th
+                      class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"
+                    >
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for github in githubs %}
+                  <tr>
+                    <td>
+                      <div class="d-flex px-2 py-1">
+                        <div>
+                          <img
+                            src="{% static 'img/small-logos/icon-github.png' %}"
+                            class="avatar avatar-sm me-3"
+                            style="
+                              width: 36px !important;
+                              height: auto !important;
+                            "
+                            alt="{{ github.full_name }}"
+                          />
+                        </div>
+                        <div class="d-flex flex-column justify-content-center">
+                          <h6 class="mb-0 text-sm">{{ github.full_name }}</h6>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="align-middle text-center">
+                      <div class="avatar-group mt-2">
+                        <a
+                          role="button"
+                          class="avatar avatar-xs rounded-circle"
+                          data-bs-toggle="tooltip"
+                          data-bs-placement="bottom"
+                          title="{{ githubProfil.name }}"
+                        >
+                          <img
+                            src="{{ githubProfil.avatar_url }}"
+                            alt="{{ githubProfil.name }}"
+                          />
+                        </a>
+                      </div>
+                    </td>
+                    <td>
+                      <span class="text-sm font-weight-bold"
+                        >{{ github.language }}
+                      </span>
+                    </td>
+                    <td>
+                      <span class="text-sm font-weight-bold">
+                        {{ github.watchers_count }}
+                      </span>
+                    </td>
+                    <td class="align-middle text-center text-sm">
+                      <span class="text-sm font-weight-bold">
+                        {{ github.forks }}
+                      </span>
+                    </td>
+                    <td class="align-middle text-center text-sm">
+                      <span class="text-sm font-weight-bold">
+                        {{ github.default_branch }}
+                      </span>
+                    </td>
+                    <td class="align-middle text-center">
+                      {% if github.visibility != "public" %}
+                      <ul class="timeline-none">
+                        <li>
+                          <i class="fas fa-times text-danger me-2"></i
+                          ><span class="text-danger">Projets Privé</span>
+                        </li>
+                      </ul>
+                      {% else %}
+                      <ul class="timeline-none">
+                        <li>
+                          <i class="fas fa-check text-success me-2"></i
+                          ><span class="text-success">Projets Public</span>
+                        </li>
+                      </ul>
+                      {% endif %}
+                    </td>
+                    <td class="align-middle text-center text-sm">
+                      <span class="text-sm font-weight-bold">
+                        {{ github.updated_at|parse }}
+                      </span>
+                    </td>
+                    <td class="align-middle text-center">
+                      <div>
+                        <a
+                          class="btn btn-primary btn-sm"
+                          target="_blank"
+                          href="https://github.com/{{ github.full_name }}"
+                          >Voir</a
+                        >
+                      </div>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endif %} {% include '../footer-dashboard.html' %}
+  </div>
+</main>
+
+{% include 'footer.html' %}

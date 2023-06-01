@@ -1,0 +1,446 @@
+{% include 'base.html' %} {% load static %}
+
+<style>
+  .progress-bar {
+    height: 10px;
+    border-radius: 0.375rem;
+    margin-top: 0;
+    margin-left: -1px;
+  }
+</style>
+
+<main class="main-content mt-0">
+  <section class="min-vh-100 mb-8">
+    <div
+      class="page-header align-items-start min-vh-50 pt-5 pb-11 m-3 border-radius-lg"
+      style="
+        background-image: url('{% static 'img/curved-images/curved14.jpg' %}');
+      "
+    >
+      <span class="mask bg-gradient-dark opacity-6"></span>
+      <div class="container">
+        <div class="row justify-content-center">
+          <div class="col-lg-5 text-center mx-auto">
+            <h1 class="text-white mb-2 mt-5">Applications manager</h1>
+            <p class="text-lead text-white">
+              Merci de vous inscrire pour profiter de toutes nos
+              fonctionnalités.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="container">
+      <div class="row mt-lg-n10 mt-md-n11 mt-n10">
+        <div class="col-xl-4 col-lg-5 col-md-7 mx-auto">
+          <div class="card z-index-0">
+            <div class="card-body">
+              <form
+                role="form text-left"
+                method="POST"
+                role="post"
+                class="needs-validation"
+                novalidate
+              >
+                {% csrf_token %} {% if msg %}
+                <div class="alert alert-danger" role="alert">
+                  <span class="text-white font-weight-bold">{{ msg }}</span>
+                </div>
+                {% endif %}
+                <div class="mb-3">
+                  <input
+                    required
+                    type="text"
+                    class="form-control"
+                    name="first_name"
+                    placeholder="Prénom"
+                    aria-label="first_name"
+                    aria-describedby="first_name"
+                  />
+                  <div class="invalid-feedback">
+                    Le champs prénom est obligatoire.
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <input
+                    required
+                    type="text"
+                    class="form-control"
+                    name="last_name"
+                    placeholder="Nom"
+                    aria-label="last_name"
+                    aria-describedby="last_name"
+                  />
+                  <div class="invalid-feedback">
+                    Le champs nom est obligatoire.
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <input
+                    required
+                    type="email"
+                    name="email"
+                    class="form-control"
+                    placeholder="Adresse email"
+                    aria-label="Email"
+                    aria-describedby="email"
+                  />
+                  <div class="invalid-feedback">
+                    Le champs email est obligatoire.
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <input
+                    required
+                    type="text"
+                    name="username"
+                    class="form-control"
+                    placeholder="Nom d'utilisateur"
+                    aria-label="username"
+                    aria-describedby="username"
+                  />
+                  <div class="invalid-feedback">
+                    Le champs nom d'utilisateur est obligatoire.
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <input
+                    required
+                    type="password"
+                    name="password1"
+                    minlength="8"
+                    id="validationPassword"
+                    class="form-control"
+                    placeholder="Mot de passe"
+                    aria-label="Password"
+                    aria-describedby="password"
+                  />
+
+                  <div
+                    id="feedbackin"
+                    class="valid-feedback form-text mt-2 mb-2"
+                    style="color: red; font-weight: 600"
+                  >
+                    Mot de passe fort !
+                  </div>
+                  <div
+                    id="feedbackirn"
+                    class="invalid-feedback form-text mt-2 mb-2"
+                    style="font-weight: 600"
+                  >
+                    8 caractères, chiffre, caractère spécial majuscule Lettre et
+                    minuscules
+                  </div>
+
+                  <div class="progress mt-3" style="height: 10px">
+                    <div
+                      id="progressbar"
+                      class="progress-bar progress-bar-striped progress-bar-animated"
+                      role="progressbar"
+                      style="width: 10%"
+                      aria-valuenow="50"
+                      aria-valuemin="0"
+                      aria-valuemax="100"
+                    ></div>
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <input
+                    required
+                    id="validationPassword2"
+                    type="password"
+                    name="password2"
+                    minlength="8"
+                    class="form-control"
+                    placeholder="Confirmer le mot de passe"
+                    aria-label="Password"
+                    aria-describedby="password"
+                  />
+
+                  <div
+                    id="feedbackin2"
+                    class="valid-feedback form-text mt-2 mb-2"
+                    style="color: red; font-weight: 600"
+                  >
+                    Mot de passe fort !
+                  </div>
+                  <div
+                    id="feedbackirn2"
+                    class="invalid-feedback form-text mt-2 mb-2"
+                    style="font-weight: 600"
+                  >
+                    8 caractères, chiffre, caractère spécial majuscule Lettre et
+                    minuscules
+                  </div>
+
+                  <div class="progress mt-3" style="height: 10px">
+                    <div
+                      id="progressbar2"
+                      class="progress-bar progress-bar-striped progress-bar-animated"
+                      role="progressbar"
+                      style="width: 10%"
+                      aria-valuenow="50"
+                      aria-valuemin="0"
+                      aria-valuemax="100"
+                    ></div>
+                  </div>
+                </div>
+                <div class="text-center">
+                  <button
+                    type="submit"
+                    id="verifyPassword"
+                    disabled
+                    class="btn bg-gradient-dark w-100 my-4 mb-2"
+                  >
+                    S'inscrire
+                  </button>
+                </div>
+                <p class="text-sm mt-3 mb-0">
+                  Vous avez déjà un compte ?
+                  <a href="/" class="text-dark font-weight-bolder">Connexion</a>
+                </p>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+  // Fetch all the forms we want to apply custom Bootstrap validation styles to
+  var forms = document.getElementsByClassName("needs-validation");
+  // Loop over them and prevent submission
+  var validation = Array.prototype.filter.call(forms, function (form) {
+    // making sure password enters the right characters
+    form.validationPassword.addEventListener("keypress", function (event) {
+      var checkx = true;
+      var chr = String.fromCharCode(event.which);
+
+      var matchedCase = new Array();
+      matchedCase.push("[!@#$%&*_?]"); // Caractères spécial
+      matchedCase.push("[A-Z]"); // Uppercase Alpabates
+      matchedCase.push("[0-9]"); // Nombres
+      matchedCase.push("[a-z]");
+
+      for (var i = 0; i < matchedCase.length; i++) {
+        if (new RegExp(matchedCase[i]).test(chr)) {
+          checkx = false;
+        }
+      }
+
+      if (form.validationPassword.value.length >= 20) checkx = true;
+
+      if (checkx) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+    });
+
+    form.addEventListener(
+      "submit",
+      function (event) {
+        if (!form.checkValidity()) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+
+        form.classList.add("was-validated");
+      },
+      false
+    );
+
+    //Validate Password to have more than 8 Characters and A capital Letter, small letter, number and special character
+    // Create an array and push all possible values that you want in password
+    var matchedCase = new Array();
+    matchedCase.push("[$@$$!%*#?&]"); // Caractères spécial
+    matchedCase.push("[A-Z]"); // Uppercase Alpabates
+    matchedCase.push("[0-9]"); // Nombres
+    matchedCase.push("[a-z]"); // Lowercase Alphabates
+
+    form.validationPassword.addEventListener("keyup", function () {
+      var messageCase = new Array();
+      messageCase.push(" Caractères spécial"); // Caractères spécial
+      messageCase.push(" Majuscules"); // Uppercase Alpabates
+      messageCase.push(" Nombres"); // Nombres
+      messageCase.push(" Minuscules"); // Lowercase Alphabates
+
+      var ctr = 0;
+      var rti = "";
+      for (var i = 0; i < matchedCase.length; i++) {
+        if (new RegExp(matchedCase[i]).test(form.validationPassword.value)) {
+          if (i == 0)
+            messageCase.splice(messageCase.indexOf(" Caractères spécial"), 1);
+          if (i == 1) messageCase.splice(messageCase.indexOf(" Majuscule"), 1);
+          if (i == 2) messageCase.splice(messageCase.indexOf(" Nombres"), 1);
+          if (i == 3) messageCase.splice(messageCase.indexOf(" Minuscules"), 1);
+          ctr++;
+        }
+      }
+
+      // Display it
+      var progressbar = 0;
+      var strength = "";
+      var bClass = "";
+      switch (ctr) {
+        case 0:
+        case 1:
+          strength = "Bien trop faible";
+          progressbar = 15;
+          bClass = "bg-danger";
+          break;
+        case 2:
+          strength = "Très faible";
+          progressbar = 25;
+          bClass = "bg-danger";
+          break;
+        case 3:
+          strength = "Faible";
+          progressbar = 34;
+          bClass = "bg-warning";
+          break;
+        case 4:
+          strength = "Moyen";
+          progressbar = 65;
+          bClass = "bg-warning";
+          break;
+      }
+
+      if (strength == "Moyen" && form.validationPassword.value.length >= 8) {
+        strength = "Fort";
+        bClass = "bg-success";
+        form.validationPassword.setCustomValidity("");
+      } else {
+        form.validationPassword.setCustomValidity(strength);
+      }
+
+      var sometext = "";
+
+      if (form.validationPassword.value.length < 8) {
+        var lengthI = 8 - form.validationPassword.value.length;
+        sometext += ` de plus de ${lengthI} caractères, `;
+      }
+
+      sometext += messageCase;
+
+      if (sometext) {
+        sometext = " vous avez besoin" + sometext;
+      }
+
+      $("#feedbackin, #feedbackirn").text(strength + sometext);
+      $("#progressbar")
+        .removeClass("bg-danger bg-warning bg-success")
+        .addClass(bClass);
+      var plength = form.validationPassword.value.length;
+      if (plength > 0) progressbar += (plength - 0) * 1.75;
+      var percentage = progressbar + "%";
+      form.validationPassword.parentNode.classList.add("was-validated");
+      $("#progressbar").width(percentage);
+
+      if (
+        form.validationPassword.checkValidity() === true &&
+        form.validationPassword2.checkValidity() === true &&
+        form.validationPassword.value ===
+        form.validationPassword2.value
+      ) {
+        form.verifyPassword.disabled = false;
+      } else {
+        form.verifyPassword.disabled = true;
+      }
+    });
+
+    form.validationPassword2.addEventListener("keyup", function () {
+      var messageCase = new Array();
+      messageCase.push(" Caractères spécial"); // Caractères spécial
+      messageCase.push(" Majuscules"); // Uppercase Alpabates
+      messageCase.push(" Nombres"); // Nombres
+      messageCase.push(" Minuscules"); // Lowercase Alphabates
+
+      var ctr = 0;
+      var rti = "";
+      for (var i = 0; i < matchedCase.length; i++) {
+        if (new RegExp(matchedCase[i]).test(form.validationPassword2.value)) {
+          if (i == 0)
+            messageCase.splice(messageCase.indexOf(" Caractères spécial"), 1);
+          if (i == 1) messageCase.splice(messageCase.indexOf(" Majuscule"), 1);
+          if (i == 2) messageCase.splice(messageCase.indexOf(" Nombres"), 1);
+          if (i == 3) messageCase.splice(messageCase.indexOf(" Minuscules"), 1);
+          ctr++;
+        }
+      }
+
+      // Display it
+      var progressbar = 0;
+      var strength = "";
+      var bClass = "";
+      switch (ctr) {
+        case 0:
+        case 1:
+          strength = "Bien trop faible";
+          progressbar = 15;
+          bClass = "bg-danger";
+          break;
+        case 2:
+          strength = "Très faible";
+          progressbar = 25;
+          bClass = "bg-danger";
+          break;
+        case 3:
+          strength = "Faible";
+          progressbar = 34;
+          bClass = "bg-warning";
+          break;
+        case 4:
+          strength = "Moyen";
+          progressbar = 65;
+          bClass = "bg-warning";
+          break;
+      }
+
+      if (strength == "Moyen" && form.validationPassword2.value.length >= 8) {
+        strength = "Fort";
+        bClass = "bg-success";
+        form.validationPassword2.setCustomValidity("");
+      } else {
+        form.validationPassword2.setCustomValidity(strength);
+      }
+
+      var sometext = "";
+
+      if (form.validationPassword2.value.length < 8) {
+        var lengthI = 8 - form.validationPassword2.value.length;
+        sometext += ` de plus de ${lengthI} caractères, `;
+      }
+
+      sometext += messageCase;
+
+      if (sometext) {
+        sometext = " vous avez besoin" + sometext;
+      }
+
+      $("#feedbackin2, #feedbackirn2").text(strength + sometext);
+      $("#progressbar2")
+        .removeClass("bg-danger bg-warning bg-success")
+        .addClass(bClass);
+      var plength = form.validationPassword2.value.length;
+      if (plength > 0) progressbar += (plength - 0) * 1.75;
+      var percentage = progressbar + "%";
+      form.validationPassword2.parentNode.classList.add("was-validated");
+      $("#progressbar2").width(percentage);
+
+      if (
+        form.validationPassword.checkValidity() === true &&
+        form.validationPassword2.checkValidity() === true &&
+        form.validationPassword.value ===
+        form.validationPassword2.value
+      ) {
+        form.verifyPassword.disabled = false;
+      } else {
+        form.verifyPassword.disabled = true;
+      }
+    });
+  });
+</script>
+
+{% include 'footer-other.html' %}

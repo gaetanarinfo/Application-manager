@@ -1,0 +1,63 @@
+{% include 'base.html' %} {% load static %}
+
+<section class="u-align-center u-clearfix u-container-align-center u-image u-shading u-section-1" id="carousel_2a7d"
+  data-image-width="1980" data-image-height="1320">
+  <div class="u-clearfix u-sheet u-valign-middle u-sheet-1">
+    <div class="u-align-left u-container-style u-group u-group-1 animated customAnimationIn-played"
+      data-animation-name="customAnimationIn" data-animation-duration="1500" data-animation-delay="250"
+      style="will-change: transform, opacity; animation-duration: 1500ms">
+      <div class="u-container-layout u-container-layout-1">
+        <div alt="" class="u-image u-image-circle u-image-1" data-image-width="501" data-image-height="501"></div>
+        <h5 class="u-text u-text-1">Gaëtan Seigneur</h5>
+      </div>
+    </div>
+    <h1
+      class="u-align-center u-custom-font u-font-raleway u-text u-text-palette-4-base u-text-2 animated customAnimationIn-played"
+      data-animation-name="customAnimationIn" data-animation-duration="1500"
+      style="will-change: transform, opacity; animation-duration: 1500ms">
+      Application manager - Tout en un
+    </h1>
+    <h3
+      class="u-align-center u-custom-font u-font-lato u-text u-text-body-alt-color u-text-3 animated customAnimationIn-played"
+      data-animation-name="customAnimationIn" data-animation-duration="1500" data-animation-delay="500"
+      style="will-change: transform, opacity; animation-duration: 1500ms">
+      Nous vous préparons quelque chose d'incroyable et d'excitant. Alors resté
+      bien à l'écoute.
+    </h3>
+
+    <div class="u-clearfix u-gutter-0 u-layout-wrap u-layout-wrap-1">
+      <div class="u-layout">
+        <div class="u-layout-row">
+          <div
+            class="u-align-center-sm u-align-center-xs u-align-right-lg u-align-right-md u-align-right-xl u-container-style u-layout-cell u-left-cell u-size-30 u-layout-cell-1">
+            <div class="u-container-layout u-valign-middle u-container-layout-2">
+              <a href="{% if request.user.is_authenticated %}/dashboard{% else %}/login{% endif %}"
+                class="u-active-white u-border-2 u-border-active-white u-border-hover-white u-border-palette-4-base u-btn u-btn-round u-button-style u-hover-white u-palette-4-base u-radius-50 u-text-active-palette-4-base u-text-hover-palette-4-base u-btn-2 animated customAnimationIn-played"
+                data-animation-name="customAnimationIn" data-animation-duration="1500" data-animation-direction=""
+                data-animation-delay="500" style="
+                  will-change: transform, opacity;
+                  animation-duration: 1500ms;
+                ">{% if request.user.is_authenticated %}
+                Tableau de bord
+                {% else %}
+                Connexion
+                {% endif %}</a>
+            </div>
+          </div>
+          <div
+            class="u-align-center-sm u-align-center-xs u-align-left-lg u-align-left-md u-align-left-xl u-container-style u-layout-cell u-right-cell u-size-30 u-layout-cell-2">
+            <div
+              class="u-container-layout u-valign-middle-lg u-valign-middle-md u-valign-middle-xl u-valign-top-sm u-valign-top-xs u-container-layout-3">
+              <a href="mailto:contact@portfolio-gaetan.fr"
+                class="u-active-white u-border-2 u-border-active-white u-border-hover-white u-border-palette-4-base u-btn u-btn-round u-button-style u-hover-white u-none u-radius-50 u-text-active-palette-4-base u-text-hover-palette-4-base u-btn-3 animated customAnimationIn-played"
+                data-animation-name="customAnimationIn" data-animation-duration="1500" data-animation-delay="500" style="
+                  will-change: transform, opacity;
+                  animation-duration: 1500ms;
+                ">Contactez-moi</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
