@@ -1,0 +1,470 @@
+{% include 'base.html' %} {% load static %} {% include 'side-nav.html' %} {% load poll_extras %}
+<style>
+    .timeline-none {
+        margin-bottom: 0;
+        padding: 0;
+    }
+
+    .timeline-none li {
+        position: relative;
+        display: block;
+        font-size: 15px;
+        font-weight: 500;
+        padding-left: 0;
+        font-weight: bold;
+    }
+
+    table tbody tr td {
+        vertical-align: middle;
+    }
+</style>
+
+<main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg">
+    {% include 'navbar.html' %}
+
+
+    <div class="container-fluid py-4">
+
+        <div class="row my-4">
+            <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+                <div class="card">
+                    <div class="card-body p-3">
+                        <div class="row">
+                            <div class="col-8">
+                                <div class="numbers">
+                                    <p class="text-sm mb-0 text-capitalize font-weight-bold">
+                                        Projets
+                                    </p>
+                                    <h5 class="font-weight-bolder mb-0">{{ counterProjets }}</h5>
+                                </div>
+                            </div>
+                            <div class="col-4 text-end">
+                                <div class="icon icon-shape bg-gradient-primary shadow text-center border-radius-md">
+                                    <i class="ni ni-app text-lg opacity-10" aria-hidden="true"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12 col-xl-4">
+
+                <div class="card h-100">
+                    <div class="card-header pb-0 p-3">
+                        <div class="row">
+                            <div class="col-md-8 d-flex align-items-center">
+                                <h6 class="mb-0">Configuration du serveur</h6>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body p-3">
+                        <ul class="list-group">
+                            <li class="list-group-item border-0 ps-0 pt-0 text-sm"><strong class="text-dark">Hôte Mysql
+                                    :</strong> &nbsp; {{ configPortfolio.MYSQL_HOST }}</li>
+                            <li class="list-group-item border-0 ps-0 pt-0 text-sm"><strong class="text-dark">Utilisateur
+                                    Mysql :</strong> &nbsp; {{ configPortfolio.MYSQL_USER }}</li>
+                            <li class="list-group-item border-0 ps-0 pt-0 text-sm"><strong class="text-dark">Mot de
+                                    passe Mysql :</strong> &nbsp; {{ configPortfolio.MYSQL_PASSWORD }}</li>
+                            <li class="list-group-item border-0 ps-0 pt-0 text-sm"><strong class="text-dark">Base de
+                                    donnée Mysql :</strong> &nbsp; {{ configPortfolio.MYSQL_DATABASE }}</li>
+                            <li class="list-group-item border-0 ps-0 pt-0 text-sm"><strong class="text-dark">Port Mysql
+                                    :</strong> &nbsp; {{ configPortfolio.MYSQL_PORT }}</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-xl-4">
+                <div class="card h-100">
+                    <div class="card-header pb-0 p-3">
+                        <div class="row">
+                            <div class="col-md-8 d-flex align-items-center">
+                                <h6 class="mb-0">Configuration du client</h6>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body p-3">
+                        <ul class="list-group">
+                            <li class="list-group-item border-0 ps-0 pt-0 text-sm"><strong class="text-dark">Nom de
+                                    l'application
+                                    :</strong> &nbsp; {{ configPortfolioClient.APP_NAME }}</li>
+                            <li class="list-group-item border-0 ps-0 pt-0 text-sm"><strong
+                                    class="text-dark">Environement
+                                    :</strong> &nbsp; {{ configPortfolioClient.APP_ENV }}</li>
+                            <li class="list-group-item border-0 ps-0 pt-0 text-sm"><strong class="text-dark">Mode Debug
+                                    :</strong> &nbsp; {{ configPortfolioClient.APP_DEBUG }}</li>
+                            <li class="list-group-item border-0 ps-0 pt-0 text-sm"><strong class="text-dark">Clé
+                                    d'application
+                                    :</strong> &nbsp; {{ configPortfolioClient.APP_KEY }}</li>
+                            <li class="list-group-item border-0 ps-0 pt-0 text-sm"><strong class="text-dark">Hôte Mysql
+                                    :</strong> &nbsp; {{ configPortfolioClient.DB_HOST }}</li>
+                            <li class="list-group-item border-0 ps-0 pt-0 text-sm"><strong class="text-dark">Port Mysql
+                                    :</strong> &nbsp; {{ configPortfolioClient.DB_PORT }}</li>
+                            <li class="list-group-item border-0 ps-0 pt-0 text-sm"><strong class="text-dark">Base de
+                                    donnée Mysql
+                                    :</strong> &nbsp; {{ configPortfolioClient.DB_DATABASE }}</li>
+                            <li class="list-group-item border-0 ps-0 pt-0 text-sm"><strong class="text-dark">Utilisateur
+                                    Mysql
+                                    :</strong> &nbsp; {{ configPortfolioClient.DB_USERNAME }}</li>
+                            <li class="list-group-item border-0 ps-0 pt-0 text-sm"><strong class="text-dark">Mot de
+                                    passe Mysql
+                                    :</strong> &nbsp; {{ configPortfolioClient.DB_PASSWORD }}</li>
+                            <li class="list-group-item border-0 ps-0 pt-0 text-sm"><strong class="text-dark">Mail
+                                    :</strong> &nbsp; {{ configPortfolioClient.MAIL_MAILER }}</li>
+                            <li class="list-group-item border-0 ps-0 pt-0 text-sm"><strong class="text-dark">Mail Hôte
+                                    :</strong> &nbsp; {{ configPortfolioClient.MAIL_HOST }}</li>
+                            <li class="list-group-item border-0 ps-0 pt-0 text-sm"><strong class="text-dark">Mail Port
+                                    :</strong> &nbsp; {{ configPortfolioClient.MAIL_PORT }}</li>
+                            <li class="list-group-item border-0 ps-0 pt-0 text-sm"><strong class="text-dark">Mail
+                                    Utilisateur
+                                    :</strong> &nbsp; {{ configPortfolioClient.MAIL_USERNAME }}</li>
+                            <li class="list-group-item border-0 ps-0 pt-0 text-sm"><strong class="text-dark">Mail Mot de
+                                    passe
+                                    :</strong> &nbsp; {{ configPortfolioClient.MAIL_PASSWORD }}</li>
+                            <li class="list-group-item border-0 ps-0 pt-0 text-sm"><strong class="text-dark">Mail
+                                    Encrypt
+                                    :</strong> &nbsp; {{ configPortfolioClient.MAIL_ENCRYPTION }}</li>
+                            <li class="list-group-item border-0 ps-0 pt-0 text-sm"><strong class="text-dark">Mail From
+                                    Adresse
+                                    :</strong> &nbsp; {{ configPortfolioClient.MAIL_FROM_ADDRESS }}</li>
+                            <li class="list-group-item border-0 ps-0 pt-0 text-sm"><strong class="text-dark">Mail From
+                                    Nom
+                                    :</strong> &nbsp; {{ configPortfolioClient.MAIL_FROM_NAME }}</li>
+                            <li class="list-group-item border-0 ps-0 pt-0 text-sm"><strong class="text-dark">Clé GithHub
+                                    :</strong> &nbsp; {{ configPortfolioClient.TOKEN_GITHUB }}</li>
+                            <li class="list-group-item border-0 ps-0 pt-0 text-sm"><strong class="text-dark">Clé Youtube
+                                    :</strong> &nbsp; {{ configPortfolioClient.TOKEN_YOUTUBE }}</li>
+                            <li class="list-group-item border-0 ps-0 pt-0 text-sm"><strong class="text-dark">Clé Google
+                                    :</strong> &nbsp; {{ configPortfolioClient.TOKEN_GOOGLE }}</li>
+                            <li class="list-group-item border-0 ps-0 pt-0 text-sm"><strong class="text-dark">Google
+                                    Client Id
+                                    :</strong> &nbsp; {{ configPortfolioClient.GOOGLE_CLIENT_ID }}</li>
+                            <li class="list-group-item border-0 ps-0 pt-0 text-sm"><strong class="text-dark">Client
+                                    Google Secret
+                                    :</strong> &nbsp; {{ configPortfolioClient.GOOGLE_CLIENT_SECRET }}</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-xl-4">
+                <div class="card h-100">
+                    <div class="card-header pb-0 p-3">
+                        <div class="row">
+                            <div class="col-md-8 d-flex align-items-center">
+                                <h6 class="mb-0">Configuration du client</h6>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body p-3">
+                        <ul class="list-group">
+                            <li class="list-group-item border-0 ps-0 pt-0 text-sm"><strong class="text-dark">Google
+                                    Redirection
+                                    :</strong> &nbsp; {{ configPortfolioClient.GOOGLE_REDIRECT }}</li>
+                            <li class="list-group-item border-0 ps-0 pt-0 text-sm"><strong class="text-dark">Facebook
+                                    Client Id
+                                    :</strong> &nbsp; {{ configPortfolioClient.FACEBOOK_CLIENT_ID }}</li>
+                            <li class="list-group-item border-0 ps-0 pt-0 text-sm"><strong class="text-dark">Facebook
+                                    Client Secret
+                                    :</strong> &nbsp; {{ configPortfolioClient.FACEBOOK_CLIENT_SECRET }}</li>
+                            <li class="list-group-item border-0 ps-0 pt-0 text-sm"><strong class="text-dark">Facebook
+                                    Return Url
+                                    :</strong> &nbsp; {{ configPortfolioClient.FACEBOOK_CALLBACK_URL }}</li>
+                            <li class="list-group-item border-0 ps-0 pt-0 text-sm"><strong class="text-dark">GithHub
+                                    Client Id
+                                    :</strong> &nbsp; {{ configPortfolioClient.GITHUB_CLIENT_ID }}</li>
+                            <li class="list-group-item border-0 ps-0 pt-0 text-sm"><strong class="text-dark">GitHub
+                                    Client Secret
+                                    :</strong> &nbsp; {{ configPortfolioClient.GITHUB_CLIENT_SECRET }}</li>
+                            <li class="list-group-item border-0 ps-0 pt-0 text-sm"><strong class="text-dark">GitHub
+                                    Return Url
+                                    :</strong> &nbsp; {{ configPortfolioClient.GITHUB_CALLBACK_URL }}</li>
+                            <li class="list-group-item border-0 ps-0 pt-0 text-sm"><strong class="text-dark">Clé
+                                    Ecouteur Domaine
+                                    :</strong> &nbsp; {{ configPortfolioClient.TOKEN_WHOIS_DOMAIN }}</li>
+                            <li class="list-group-item border-0 ps-0 pt-0 text-sm"><strong class="text-dark">Mode Paypal
+                                    :</strong> &nbsp; {{ configPortfolioClient.PAYPAL_MODE }}</li>
+                            <li class="list-group-item border-0 ps-0 pt-0 text-sm"><strong class="text-dark">Paypal Live
+                                    Client Id
+                                    :</strong> &nbsp; {{ configPortfolioClient.PAYPAL_LIVE_CLIENT_ID }}</li>
+                            <li class="list-group-item border-0 ps-0 pt-0 text-sm"><strong class="text-dark">Paypal Live
+                                    Client Secret
+                                    :</strong> &nbsp; {{ configPortfolioClient.PAYPAL_LIVE_CLIENT_SECRET }}</li>
+                            <li class="list-group-item border-0 ps-0 pt-0 text-sm"><strong class="text-dark">Facebook
+                                    App Id
+                                    :</strong> &nbsp; {{ configPortfolioClient.FACEBOOK_APP_ID }}</li>
+                            <li class="list-group-item border-0 ps-0 pt-0 text-sm"><strong class="text-dark">Facebook
+                                    App Secret
+                                    :</strong> &nbsp; {{ configPortfolioClient.FACEBOOK_APP_SECRET }}</li>
+                            <li class="list-group-item border-0 ps-0 pt-0 text-sm"><strong class="text-dark">Facebook
+                                    App Clé
+                                    :</strong> &nbsp; {{ configPortfolioClient.FACEBOOK_APP_TOKEN }}</li>
+                            <li class="list-group-item border-0 ps-0 pt-0 text-sm"><strong class="text-dark">Twitter Api
+                                    Clé
+                                    :</strong> &nbsp; {{ configPortfolioClient.TWITTER_API_KEY }}</li>
+                            <li class="list-group-item border-0 ps-0 pt-0 text-sm"><strong class="text-dark">Twitter Api
+                                    Secret
+                                    :</strong> &nbsp; {{ configPortfolioClient.TWITTER_API_SECRET }}</li>
+                            <li class="list-group-item border-0 ps-0 pt-0 text-sm"><strong class="text-dark">Twitter
+                                    Accès Clé
+                                    :</strong> &nbsp; {{ configPortfolioClient.TWITTER_ACCESS_TOKEN }}</li>
+                            <li class="list-group-item border-0 ps-0 pt-0 text-sm"><strong class="text-dark">Twitter
+                                    Accès Secret
+                                    :</strong> &nbsp; {{ configPortfolioClient.TWITTER_ACCESS_SECRET }}</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid py-4">
+
+        <div class="row">
+            <div class="col-lg-12 col-md-12 mb-md-0 mb-4">
+                <div class="card">
+                    <div class="card-body px-0 pb-2">
+                        <div class="table-responsive">
+                            <table class="table align-items-center mb-0">
+                                <thead>
+                                    <tr>
+                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                            Nom
+                                        </th>
+                                        <th
+                                            class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
+                                            Catégorie
+                                        </th>
+                                        <th
+                                            class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
+                                            Participants
+                                        </th>
+                                        <th
+                                            class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                            Budget
+                                        </th>
+                                        <th
+                                            class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                            Avancé du projet
+                                        </th>
+                                        <th
+                                            class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                            Actions
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for projet in projets %}
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex px-2 py-1">
+                                                <div>
+                                                    {% if projet.categorie == "template" %}
+                                                    <img src="{% static 'img/small-logos/logo-slack.svg' %}"
+                                                        class="avatar avatar-sm me-3" alt="{{ projet.title }}" />
+                                                    {% else %}
+                                                    <img src="{% static 'img/small-logos/icon-sun-cloud.png' %}"
+                                                        class="avatar avatar-sm me-3" alt="{{ projet.title }}" />
+                                                    {% endif %}
+                                                </div>
+                                                <div class="d-flex flex-column justify-content-center">
+                                                    <h6 class="mb-0 text-sm">{{ projet.title }}</h6>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span class="text-sm font-weight-bold">{{ projet.categorie }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <div class="avatar-group mt-2">
+                                                <a role="button" class="avatar avatar-xs rounded-circle"
+                                                    data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                                    title="{{ projet.author }}">
+                                                    <img src="{% static 'img/' %}{{ projet.author }}.jpg"
+                                                        alt="{{ projet.author }}" />
+                                                </a>
+                                            </div>
+                                        </td>
+                                        <td class="align-middle text-center text-sm">
+                                            <span class="text-xs font-weight-bold">
+                                                {% if projet.budget <= 0 %} <span>Gratuit</span>
+                                            {% else %}
+                                            <span>{{ projet.budget }} €</span>
+                                            {% endif %}
+                                            </span>
+                                        </td>
+                                        <td class="align-middle">
+                                            <div class="progress-wrapper w-75 mx-auto">
+                                                <div class="progress-info">
+                                                    <div class="progress-percentage">
+                                                        <span class="text-xs font-weight-bold">
+                                                            {{ projet.avancement }}%</span>
+                                                    </div>
+                                                </div>
+                                                <div class="progress">
+                                                    <div class="progress-bar bg-gradient-info w-{{ projet.avancement }}"
+                                                        role="progressbar" aria-valuenow="{{ projet.avancement }}"
+                                                        aria-valuemin="0" aria-valuemax="100"></div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="align-middle text-center">
+                                            <div class="d-flex justify-content-center">
+                                                <div class="me-2">
+                                                    <a class="btn btn-warning btn-sm mb-0" target="_blank"
+                                                        href="">Editer</a>
+                                                </div>
+                                                <div>
+                                                    {% if projet.categorie == "template" %}
+                                                    <a class="btn btn-primary btn-sm mb-0" target="_blank"
+                                                        href="{{ projet.url }}">Voir</a>
+                                                    {% else %}
+                                                    <a class="btn btn-primary btn-sm mb-0" target="_blank"
+                                                        href="https://portfolio-gaetan.fr/applications/{{ projet.url }}">Voir</a>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="container-fluid py-4">
+
+        <div class="row">
+            <div class="col-lg-12 col-md-12 mb-md-0 mb-4">
+                <div class="card">
+                    <div class="card-body px-0 pb-2">
+                        <div class="table-responsive">
+                            <table class="table align-items-center mb-0">
+                                <thead>
+                                    <tr>
+                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                        </th>
+                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                            Nom et Prénom
+                                        </th>
+                                        <th
+                                            class="text-uppercase text-center text-secondary text-xxs font-weight-bolder opacity-7">
+                                            Email
+                                        </th>
+                                        <th
+                                            class="text-uppercase text-center text-secondary text-xxs font-weight-bolder opacity-7">
+                                            Pseudonyme
+                                        </th>
+                                        <th
+                                            class="text-uppercase text-center text-secondary text-xxs font-weight-bolder opacity-7">
+                                            Date naissance
+                                        </th>
+                                        <th
+                                            class="text-uppercase text-center text-secondary text-xxs font-weight-bolder opacity-7">
+                                            Pays
+                                        </th>
+                                        <th
+                                            class="text-uppercase text-center text-secondary text-xxs font-weight-bolder opacity-7">
+                                            Status
+                                        </th>
+                                        <th
+                                            class="text-uppercase text-center text-secondary text-xxs font-weight-bolder opacity-7">
+                                            Compte
+                                        </th>
+                                        <th
+                                            class="text-uppercase text-end text-secondary text-xxs font-weight-bolder opacity-7">
+                                            Crée le
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for user in usersProjets %}
+                                    <tr>
+                                        <td class="text-center">
+                                            <div class="avatar-group mt-2">
+                                                <a role="button" class="avatar avatar-sm rounded-circle"
+                                                    data-bs-toggle="tooltip" data-bs-placement="bottom" title=""
+                                                    data-bs-original-title="{{ user.pseudo }}">
+                                                    <img src="https://portfolio-gaetan.fr/img/profil/{{ user.avatar }}"
+                                                        alt="{{ user.pseudo }}">
+                                                </a>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex flex-column justify-content-center">
+                                                <h6 class="mb-0 text-sm">{{ user.firstname }} {{ user.lastname }}</h6>
+                                            </div>
+                                        </td>
+                                        <td class="text-center">
+                                            <div class="d-flex flex-column justify-content-center">
+                                                <h6 class="mb-0 text-sm">{{ user.email }}</h6>
+                                            </div>
+                                        </td>
+                                        <td class="text-center">
+                                            <div class="d-flex flex-column justify-content-center">
+                                                <h6 class="mb-0 text-sm">{{ user.pseudo }}</h6>
+                                            </div>
+                                        </td>
+                                        <td class="text-center">
+                                            <div class="d-flex flex-column justify-content-center">
+                                                <h6 class="mb-0 text-sm">{{ user.naissance }}</h6>
+                                            </div>
+                                        </td>
+                                        <td class="text-center">
+                                            <div class="d-flex flex-column justify-content-center">
+                                                <h6 class="mb-0 text-sm">{{ user.pays }}</h6>
+                                            </div>
+                                        </td>
+                                        <td class="text-center">
+                                            <div class="d-flex flex-column justify-content-center">
+                                                <h6 class="mb-0 text-sm">
+                                                    {% if user.active == 1 %}
+                                                    <span class="badge bg-gradient-info font-weight-bold">Actif</span>
+                                                    {% else %}
+                                                    <span
+                                                        class="badge bg-gradient-danger font-weight-bold">Inactif</span>
+                                                    {% endif %}
+                                                </h6>
+                                            </div>
+                                        </td>
+                                        <td class="text-center">
+                                            <div class="d-flex flex-column justify-content-center">
+                                                <h6 class="mb-0 text-sm">
+                                                    {% if user.admin == 1 %}
+                                                    <span class="badge bg-gradient-danger font-weight-bold">Admin</span>
+                                                    {% else %}
+                                                    <span
+                                                        class="badge bg-gradient-info font-weight-bold">Utilisateur</span>
+                                                    {% endif %}
+                                                </h6>
+                                            </div>
+                                        </td>
+                                        <td class="text-end">
+                                            <div class="d-flex flex-column justify-content-center">
+                                                <h6 class="mb-0 text-sm">{{ user.created_at }}</h6>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</main>
+
+{% include 'footer.html' %}

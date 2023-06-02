@@ -15,9 +15,7 @@
   }
 </style>
 
-<main
-  class="main-content position-relative max-height-vh-100 h-100 border-radius-lg"
->
+<main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg">
   {% include 'navbar.html' %}
 
   <div class="container-fluid py-4">
@@ -36,13 +34,8 @@
                 </div>
               </div>
               <div class="col-4 text-end">
-                <div
-                  class="icon icon-shape bg-gradient-primary shadow text-center border-radius-md"
-                >
-                  <i
-                    class="ni ni-money-coins text-lg opacity-10"
-                    aria-hidden="true"
-                  ></i>
+                <div class="icon icon-shape bg-gradient-primary shadow text-center border-radius-md">
+                  <i class="ni ni-app text-lg opacity-10" aria-hidden="true"></i>
                 </div>
               </div>
             </div>
@@ -64,13 +57,8 @@
                 </div>
               </div>
               <div class="col-4 text-end">
-                <div
-                  class="icon icon-shape bg-gradient-primary shadow text-center border-radius-md"
-                >
-                  <i
-                    class="ni ni-world text-lg opacity-10"
-                    aria-hidden="true"
-                  ></i>
+                <div class="icon icon-shape bg-gradient-primary shadow text-center border-radius-md">
+                  <i class="ni ni-world text-lg opacity-10" aria-hidden="true"></i>
                 </div>
               </div>
             </div>
@@ -90,13 +78,8 @@
                 </div>
               </div>
               <div class="col-4 text-end">
-                <div
-                  class="icon icon-shape bg-gradient-primary shadow text-center border-radius-md"
-                >
-                  <i
-                    class="ni ni-paper-diploma text-lg opacity-10"
-                    aria-hidden="true"
-                  ></i>
+                <div class="icon icon-shape bg-gradient-primary shadow text-center border-radius-md">
+                  <i class="ni ni-paper-diploma text-lg opacity-10" aria-hidden="true"></i>
                 </div>
               </div>
             </div>
@@ -116,13 +99,8 @@
                 </div>
               </div>
               <div class="col-4 text-end">
-                <div
-                  class="icon icon-shape bg-gradient-primary shadow text-center border-radius-md"
-                >
-                  <i
-                    class="ni ni-cart text-lg opacity-10"
-                    aria-hidden="true"
-                  ></i>
+                <div class="icon icon-shape bg-gradient-primary shadow text-center border-radius-md">
+                  <i class="ni ni-cart text-lg opacity-10" aria-hidden="true"></i>
                 </div>
               </div>
             </div>
@@ -140,9 +118,7 @@
                 <h6>Projets</h6>
                 <p class="text-sm mb-0">
                   <i class="fa fa-check text-info" aria-hidden="true"></i>
-                  <span class="font-weight-bold ms-1"
-                    >{{ counterProjets }}</span
-                  >
+                  <span class="font-weight-bold ms-1">{{ counterProjets }}</span>
                 </p>
               </div>
             </div>
@@ -152,34 +128,22 @@
               <table class="table align-items-center mb-0">
                 <thead>
                   <tr>
-                    <th
-                      class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"
-                    >
+                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                       Nom
                     </th>
-                    <th
-                      class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2"
-                    >
+                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
                       Catégorie
                     </th>
-                    <th
-                      class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2"
-                    >
+                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
                       Participants
                     </th>
-                    <th
-                      class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"
-                    >
+                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                       Budget
                     </th>
-                    <th
-                      class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"
-                    >
+                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                       Avancé du projet
                     </th>
-                    <th
-                      class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"
-                    >
+                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                       Actions
                     </th>
                   </tr>
@@ -191,17 +155,11 @@
                       <div class="d-flex px-2 py-1">
                         <div>
                           {% if projet.categorie == "template" %}
-                          <img
-                            src="{% static 'img/small-logos/logo-slack.svg' %}"
-                            class="avatar avatar-sm me-3"
-                            alt="{{ projet.title }}"
-                          />
+                          <img src="{% static 'img/small-logos/logo-slack.svg' %}" class="avatar avatar-sm me-3"
+                            alt="{{ projet.title }}" />
                           {% else %}
-                          <img
-                            src="{% static 'img/small-logos/icon-sun-cloud.png' %}"
-                            class="avatar avatar-sm me-3"
-                            alt="{{ projet.title }}"
-                          />
+                          <img src="{% static 'img/small-logos/icon-sun-cloud.png' %}" class="avatar avatar-sm me-3"
+                            alt="{{ projet.title }}" />
                           {% endif %}
                         </div>
                         <div class="d-flex flex-column justify-content-center">
@@ -210,71 +168,45 @@
                       </div>
                     </td>
                     <td>
-                      <span class="text-sm font-weight-bold"
-                        >{{ projet.categorie }}
+                      <span class="text-sm font-weight-bold">{{ projet.categorie }}
                       </span>
                     </td>
                     <td>
                       <div class="avatar-group mt-2">
-                        <a
-                          role="button"
-                          class="avatar avatar-xs rounded-circle"
-                          data-bs-toggle="tooltip"
-                          data-bs-placement="bottom"
-                          title="{{ projet.author }}"
-                        >
-                          <img
-                            src="{% static 'img/' %}{{ projet.author }}.jpg"
-                            alt="{{ projet.author }}"
-                          />
+                        <a role="button" class="avatar avatar-xs rounded-circle" data-bs-toggle="tooltip"
+                          data-bs-placement="bottom" title="{{ projet.author }}">
+                          <img src="{% static 'img/' %}{{ projet.author }}.jpg" alt="{{ projet.author }}" />
                         </a>
                       </div>
                     </td>
                     <td class="align-middle text-center text-sm">
                       <span class="text-xs font-weight-bold">
-                        {% if projet.budget <= 0 %}
-                        <span>Gratuit</span>
-                        {% else %}
-                        <span>{{ projet.budget }} €</span>
-                        {% endif %}
+                        {% if projet.budget <= 0 %} <span>Gratuit</span>
+                      {% else %}
+                      <span>{{ projet.budget }} €</span>
+                      {% endif %}
                       </span>
                     </td>
                     <td class="align-middle">
                       <div class="progress-wrapper w-75 mx-auto">
                         <div class="progress-info">
                           <div class="progress-percentage">
-                            <span class="text-xs font-weight-bold"
-                              >{{ projet.avancement }}%</span
-                            >
+                            <span class="text-xs font-weight-bold">{{ projet.avancement }}%</span>
                           </div>
                         </div>
                         <div class="progress">
-                          <div
-                            class="progress-bar bg-gradient-info w-{{ projet.avancement }}"
-                            role="progressbar"
-                            aria-valuenow="{{ projet.avancement }}"
-                            aria-valuemin="0"
-                            aria-valuemax="100"
-                          ></div>
+                          <div class="progress-bar bg-gradient-info w-{{ projet.avancement }}" role="progressbar"
+                            aria-valuenow="{{ projet.avancement }}" aria-valuemin="0" aria-valuemax="100"></div>
                         </div>
                       </div>
                     </td>
                     <td class="align-middle">
                       <div>
                         {% if projet.categorie == "template" %}
-                        <a
-                          class="btn btn-primary btn-sm"
-                          target="_blank"
-                          href="{{ projet.url }}"
-                          >Voir</a
-                        >
+                        <a class="btn btn-primary btn-sm" target="_blank" href="{{ projet.url }}">Voir</a>
                         {% else %}
-                        <a
-                          class="btn btn-primary btn-sm"
-                          target="_blank"
-                          href="https://portfolio-gaetan.fr/applications/{{ projet.url }}"
-                          >Voir</a
-                        >
+                        <a class="btn btn-primary btn-sm" target="_blank"
+                          href="https://portfolio-gaetan.fr/applications/{{ projet.url }}">Voir</a>
                         {% endif %}
                       </div>
                     </td>
@@ -302,16 +234,12 @@
                 <div class="timeline-content">
                   <h6 class="text-dark text-sm font-weight-bold mb-0">
                     {{ value.label }}
-                    <span class="badge bg-gradient-dark"
-                      >{{ value.amount }} €</span
-                    >
+                    <span class="badge bg-gradient-dark">{{ value.amount }} €</span>
                   </h6>
                   <p class="text-secondary font-weight-bold text-xs mt-1 mb-0">
-                    {% if value.side == "credit" %}<span class="text-info"
-                      >Crédit</span
-                    >{% else %}<span class="text-danger font-weight-bold">
-                      Débit</span
-                    >{% endif %}
+                    {% if value.side == "credit" %}<span class="text-info">Crédit</span>{% else %}<span
+                      class="text-danger font-weight-bold">
+                      Débit</span>{% endif %}
                   </p>
                   <p class="text-secondary font-weight-bold text-xs mt-1 mb-0">
                     {% if value.operation_type == "card" %}
@@ -349,49 +277,31 @@
               <table class="table align-items-center mb-0">
                 <thead>
                   <tr>
-                    <th
-                      class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"
-                    >
+                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                       Nom
                     </th>
-                    <th
-                      class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"
-                    >
+                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                       Participants
                     </th>
-                    <th
-                      class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2"
-                    >
+                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
                       Langage
                     </th>
-                    <th
-                      class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2"
-                    >
+                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
                       Vues
                     </th>
-                    <th
-                      class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"
-                    >
+                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                       Forks
                     </th>
-                    <th
-                      class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"
-                    >
+                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                       Branch
                     </th>
-                    <th
-                      class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"
-                    >
+                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                       Status
                     </th>
-                    <th
-                      class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"
-                    >
+                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                       Update
                     </th>
-                    <th
-                      class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"
-                    >
+                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                       Actions
                     </th>
                   </tr>
@@ -402,15 +312,10 @@
                     <td>
                       <div class="d-flex px-2 py-1">
                         <div>
-                          <img
-                            src="{% static 'img/small-logos/icon-github.png' %}"
-                            class="avatar avatar-sm me-3"
-                            style="
+                          <img src="{% static 'img/small-logos/icon-github.png' %}" class="avatar avatar-sm me-3" style="
                               width: 36px !important;
                               height: auto !important;
-                            "
-                            alt="{{ github.full_name }}"
-                          />
+                            " alt="{{ github.full_name }}" />
                         </div>
                         <div class="d-flex flex-column justify-content-center">
                           <h6 class="mb-0 text-sm">{{ github.full_name }}</h6>
@@ -419,23 +324,14 @@
                     </td>
                     <td class="align-middle text-center">
                       <div class="avatar-group mt-2">
-                        <a
-                          role="button"
-                          class="avatar avatar-xs rounded-circle"
-                          data-bs-toggle="tooltip"
-                          data-bs-placement="bottom"
-                          title="{{ githubProfil.name }}"
-                        >
-                          <img
-                            src="{{ githubProfil.avatar_url }}"
-                            alt="{{ githubProfil.name }}"
-                          />
+                        <a role="button" class="avatar avatar-xs rounded-circle" data-bs-toggle="tooltip"
+                          data-bs-placement="bottom" title="{{ githubProfil.name }}">
+                          <img src="{{ githubProfil.avatar_url }}" alt="{{ githubProfil.name }}" />
                         </a>
                       </div>
                     </td>
                     <td>
-                      <span class="text-sm font-weight-bold"
-                        >{{ github.language }}
+                      <span class="text-sm font-weight-bold">{{ github.language }}
                       </span>
                     </td>
                     <td>
@@ -457,15 +353,13 @@
                       {% if github.visibility != "public" %}
                       <ul class="timeline-none">
                         <li>
-                          <i class="fas fa-times text-danger me-2"></i
-                          ><span class="text-danger">Projets Privé</span>
+                          <i class="fas fa-times text-danger me-2"></i><span class="text-danger">Projets Privé</span>
                         </li>
                       </ul>
                       {% else %}
                       <ul class="timeline-none">
                         <li>
-                          <i class="fas fa-check text-success me-2"></i
-                          ><span class="text-success">Projets Public</span>
+                          <i class="fas fa-check text-success me-2"></i><span class="text-success">Projets Public</span>
                         </li>
                       </ul>
                       {% endif %}
@@ -477,12 +371,72 @@
                     </td>
                     <td class="align-middle text-center">
                       <div>
-                        <a
-                          class="btn btn-primary btn-sm"
-                          target="_blank"
-                          href="https://github.com/{{ github.full_name }}"
-                          >Voir</a
-                        >
+                        <a class="btn btn-primary btn-sm" target="_blank"
+                          href="https://github.com/{{ github.full_name }}">Voir</a>
+                      </div>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row my-4">
+      <div class="col-lg-12 col-md-12 mb-md-0 mb-4">
+        <div class="card">
+          <div class="card-header pb-0">
+            <h6>Sites internet</h6>
+            <p class="text-sm mb-0">
+              <i class="fa fa-check text-info" aria-hidden="true"></i>
+              <span class="font-weight-bold ms-1">{{ websiteCount }}</span>
+            </p>
+          </div>
+          <div class="card-body px-0 pb-2">
+            <div class="table-responsive">
+              <table class="table align-items-center mb-0">
+                <thead>
+                  <tr>
+                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                      Nom
+                    </th>
+                    <th class="text-uppercase text-center text-secondary text-xxs font-weight-bolder opacity-7">
+                      Statut
+                    </th>
+                    <th class="text-uppercase text-center text-secondary text-xxs font-weight-bolder opacity-7">
+                      Dernière mise à jour
+                    </th>
+                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for website in websites %}
+                  <tr>
+                    <td class="align-middle text-left">
+                      <div class="d-flex px-2 py-1">
+                        <h6 class="mb-0 text-sm">{{ website.title }}</h6>
+                      </div>
+                    </td>
+                    <td class="align-middle text-center">
+                      <div>
+                        {% if website.status_https == 200 %}
+                        <span class="badge bg-gradient-info font-weight-bold">{{ website.status_https }}</span>
+                        {% else %}
+                        <span class="badge bg-gradient-danger font-weight-bold">{{ website.status_https }}</span>
+                        {% endif %}
+                      </div>
+                    </td>
+                    <td class="align-middle text-center">
+                      <span class="text-sm font-weight-bold">{{ website.status_https_update }}</span>
+                    </td>
+                    <td class="align-middle text-center">
+                      <div>
+                        <a class="btn btn-primary btn-sm" target="_blank" href="{{ website.url }}">Voir</a>
                       </div>
                     </td>
                   </tr>

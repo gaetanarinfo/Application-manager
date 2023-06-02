@@ -5,18 +5,15 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import logout
-from django.shortcuts import HttpResponseRedirect
 from django.contrib.auth.models import User
-from django.contrib.auth.models import Projets, UsersOthers
+from django.contrib.auth.models import Projets, UsersOthers, ProjetsUsers
 from django.contrib import messages
-from urllib.request import urlopen
-import json
 import requests
 from requests.structures import CaseInsensitiveDict
-import datetime
 from dotenv import load_dotenv
 import os
 from .forms import UpdateUserForm
+import json
 
 load_dotenv()
 
@@ -25,9 +22,6 @@ load_dotenv()
 def home(request):
     context = {"title": "Applications manager"}
     return render(request, "pages/home.html", context)
-
-
-print(f"Current date/time: {datetime.datetime.now()}")
 
 
 def sort_by_key(list):
@@ -85,6 +79,12 @@ def dashboard(request):
             .filter(categorie="template", appart_dev72=1)
             .count()
         )
+        websites = (
+            Projets.objects.using("portfolio_db")
+            .filter(categorie="template", appart_dev72=1)
+            .order_by("-created_at")
+            .all()
+        )
 
         # create a dictionary to pass
         # data to the template
@@ -100,9 +100,10 @@ def dashboard(request):
             "balanceQonto": data_json3["organization"]["bank_accounts"][0][
                 "authorized_balance"
             ],
-            "qontoList": data_json4["transactions"][0:13],
+            "qontoList": data_json4["transactions"][0:12],
             "staffUser": request.user.is_staff,
             "page": "Accueil",
+            "websites": websites,
         }
         # return response with template and context
         return render(request, "pages/dashboard.html", context)
@@ -264,3 +265,65 @@ def logout_user(request):
     logout(request)
     messages.info(request, "Vous vous êtes déconnecté avec succès.")
     return redirect("/")
+
+
+# 404 page
+def handler404(request):
+    context = {"title": "404 - Applications manager", "page": "404", "reponse": "404"}
+    return render(request, "pages/404.html", context)
+
+
+# 500 page
+def handler500(request):
+    context = {"title": "404 - Applications manager", "page": "404", "reponse": "404"}
+    return render(request, "pages/404.html", context)
+
+
+def portfolio(request):
+    arrayPortfolioConfig = {}
+    arrayPortfolioConfigClient = {}
+    
+    # File .env in portfolio
+    path = "/var/www/portfolio-back/.env"
+    with open(path) as fn:
+        for line in fn:
+            key, desc = line.strip().split("=", 1)
+            desc = desc.replace('"', "")
+            arrayPortfolioConfig[key] = desc.strip()
+
+    path = "/var/www/portfolio/.env"
+    with open(path) as fn:
+        for line in fn:
+            key, desc = line.strip().split("=", 1)
+            arrayPortfolioConfigClient[key] = desc.strip()
+            
+    projets = (
+        Projets.objects.using("portfolio_db")
+        .filter(active=1)
+        .order_by("-created_at")
+        .all()
+    )
+    
+    projetsCount = (
+        Projets.objects.using("portfolio_db")
+        .filter(active=1, author=request.user.username)
+        .count()
+    )
+    
+    usersProjets = (
+        ProjetsUsers.objects.using("portfolio_db")
+        .filter(active=1)
+        .order_by("-created_at")
+        .all()
+    )
+
+    context = {
+        "title": "Portfolio - Applications manager",
+        "page": "Portfolio",
+        "counterProjets": projetsCount,
+        "projets": projets,
+        "usersProjets": usersProjets,
+        "configPortfolio": arrayPortfolioConfig,
+        "configPortfolioClient": arrayPortfolioConfigClient,
+    }
+    return render(request, "pages/portfolio.html", context)
