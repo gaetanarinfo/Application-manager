@@ -6,7 +6,14 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import logout
 from django.contrib.auth.models import User
-from django.contrib.auth.models import Projets, UsersOthers, ProjetsUsers
+from django.contrib.auth.models import (
+    Projets,
+    UsersOthers,
+    ProjetsUsers,
+    News,
+    UsersCards,
+    usersStatements,
+)
 from django.contrib import messages
 import requests
 from requests.structures import CaseInsensitiveDict
@@ -280,50 +287,160 @@ def handler500(request):
 
 
 def portfolio(request):
-    arrayPortfolioConfig = {}
-    arrayPortfolioConfigClient = {}
-    
-    # File .env in portfolio
-    path = "/var/www/portfolio-back/.env"
-    with open(path) as fn:
-        for line in fn:
-            key, desc = line.strip().split("=", 1)
-            desc = desc.replace('"', "")
-            arrayPortfolioConfig[key] = desc.strip()
+    if request.user.is_authenticated:
+        arrayPortfolioConfig = {}
+        arrayPortfolioConfigClient = {}
 
-    path = "/var/www/portfolio/.env"
-    with open(path) as fn:
-        for line in fn:
-            key, desc = line.strip().split("=", 1)
-            arrayPortfolioConfigClient[key] = desc.strip()
-            
-    projets = (
-        Projets.objects.using("portfolio_db")
-        .filter(active=1)
-        .order_by("-created_at")
-        .all()
-    )
-    
-    projetsCount = (
-        Projets.objects.using("portfolio_db")
-        .filter(active=1, author=request.user.username)
-        .count()
-    )
-    
-    usersProjets = (
-        ProjetsUsers.objects.using("portfolio_db")
-        .filter(active=1)
-        .order_by("-created_at")
-        .all()
-    )
+        # File .env in portfolio
+        path = "/var/www/portfolio-back/.env"
+        with open(path) as fn:
+            for line in fn:
+                key, desc = line.strip().split("=", 1)
+                desc = desc.replace('"', "")
+                arrayPortfolioConfig[key] = desc.strip()
 
-    context = {
-        "title": "Portfolio - Applications manager",
-        "page": "Portfolio",
-        "counterProjets": projetsCount,
-        "projets": projets,
-        "usersProjets": usersProjets,
-        "configPortfolio": arrayPortfolioConfig,
-        "configPortfolioClient": arrayPortfolioConfigClient,
-    }
-    return render(request, "pages/portfolio.html", context)
+        path = "/var/www/portfolio/.env"
+        with open(path) as fn:
+            for line in fn:
+                key, desc = line.strip().split("=", 1)
+                arrayPortfolioConfigClient[key] = desc.strip()
+
+        projets = (
+            Projets.objects.using("portfolio_db")
+            .filter(active=1)
+            .order_by("-created_at")
+            .all()
+        )
+
+        projetsCount = (
+            Projets.objects.using("portfolio_db")
+            .filter(active=1, author=request.user.username)
+            .count()
+        )
+
+        usersProjets = (
+            ProjetsUsers.objects.using("portfolio_db")
+            .filter(active=1)
+            .order_by("-created_at")
+            .all()
+        )
+
+        news = (
+            News.objects.using("portfolio_db")
+            .filter(active=1)
+            .order_by("-created_at")
+            .all()
+        )
+
+        context = {
+            "title": "Portfolio - Applications manager",
+            "page": "Portfolio",
+            "counterProjets": projetsCount,
+            "projets": projets,
+            "usersProjets": usersProjets,
+            "configPortfolio": arrayPortfolioConfig,
+            "configPortfolioClient": arrayPortfolioConfigClient,
+            "news": news,
+        }
+        return render(request, "pages/portfolio.html", context)
+    else:
+        context = {"title": "Connexion - Applications manager"}
+        return render(request, "pages/sign-in.html", context)
+
+
+def accountBank(request):
+    if request.user.is_authenticated:
+        usersCards = (
+            UsersCards.objects.using("auth_db")
+            .filter(user_id=request.user.id)
+            .order_by("-created_at")
+            .all()
+        )
+
+        userCard = (
+            UsersCards.objects.using("auth_db")
+            .filter(user_id=request.user.id)
+            .order_by("-created_at")
+            .get()
+        )
+        
+        usersStatement = (
+            usersStatements.objects.using("auth_db")
+            .filter(user_id=request.user.id)
+            .order_by("-created_at")
+            .all()
+        )
+        
+        print(request.GET.get("page"))
+        
+        if request.GET.get("page") != None:
+            page_get = request.GET.get("page")
+        else:
+            page_get = "1"
+
+        # Qonto
+        url = "https://thirdparty.qonto.com/v2/organization"
+        headers = CaseInsensitiveDict()
+        headers["Accept"] = "application/json; charset=utf-8"
+        headers["Authorization"] = os.environ.get("KEY_QONTO")
+        resp = requests.get(url, headers=headers)
+        data_json = resp.json()
+        url3 = (
+            "https://thirdparty.qonto.com/v2/transactions?iban="
+            + data_json["organization"]["bank_accounts"][0]["iban"] + "&per_page=100&current_page=" + page_get
+        )
+        headers3 = CaseInsensitiveDict()
+        headers3["Accept"] = "application/json; charset=utf-8"
+        headers3["Authorization"] = os.environ.get("KEY_QONTO")
+        resp3 = requests.get(url3, headers=headers3)
+        data_json4 = resp3.json()
+        
+        totalPage = (data_json4["meta"]["total_count"]) / 100 - 1
+        
+        list = []
+        for i in range(round(totalPage)):
+            if i != 0:
+             list.append(i)
+             
+        page_number = page_get
+        page_before_number = int(page_get) - 1
+        page_after_number = int(page_get) + 1
+        
+        context = {
+            "title": "Compte bancaire - Applications manager",
+            "page": "Compte bancaire",
+            "usersCards": usersCards,
+            "userCard": userCard,
+            "balanceQonto": data_json["organization"]["bank_accounts"][0][
+                "authorized_balance"
+            ],
+            "usersStatement": usersStatement[0:5],
+            "qontoList": data_json4["transactions"][0:100],
+            "qontoListPaginationTotalPage": list,
+            "page_number": int(page_number),
+            "page_before_number" : page_before_number,
+            "page_after_number" : page_after_number
+        }
+        return render(request, "pages/account-bank.html", context)
+    else:
+        context = {"title": "Connexion - Applications manager"}
+        return render(request, "pages/sign-in.html", context)
+
+def statementsAccountBank(request):
+    if request.user.is_authenticated:
+        usersStatement = (
+            usersStatements.objects.using("auth_db")
+            .filter(user_id=request.user.id)
+            .order_by("-created_at")
+            .all()
+        )
+        
+        context = {
+            "title": "Relevés de compte bancaire - Applications manager",
+            "page": "Relevés de compte bancaire",
+            "usersStatement": usersStatement
+            }
+        return render(request, "pages/statements-account-bank.html", context)
+    else:
+        context = {"title": "Connexion - Applications manager"}
+        return render(request, "pages/sign-in.html", context)
