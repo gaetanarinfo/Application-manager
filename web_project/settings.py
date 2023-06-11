@@ -27,7 +27,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get("DJANGO_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ["app.portfolio-gaetan.fr", "31.33.145.219"]
 
@@ -102,6 +102,9 @@ DATABASES = {
         "PASSWORD": os.environ.get("DB2_PASSWORD"),
         "HOST": os.environ.get("DB_ADRESS"),
         "PORT": os.environ.get("DB_PORT"),
+        "OPTIONS": {
+            "init_command": "SET sql_mode='STRICT_TRANS_TABLES'",
+        }
     },
     "lep_db": {
         "NAME": "lep",

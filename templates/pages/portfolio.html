@@ -14,8 +14,25 @@
         font-weight: bold;
     }
 
-    table tbody tr td {
-        vertical-align: middle;
+    #products ul, .ul {
+        list-style-type: none;
+    }
+
+    #products table ul {
+        padding: 0 0;
+        margin: 0 0;
+    }
+
+    table ul br {
+        display: none;
+    }
+
+    table .text-capitalize {
+        text-transform: initial !important;
+    }
+
+    table .text-sm p {
+        font-size: 13px;
     }
 </style>
 
@@ -41,6 +58,100 @@
                             <div class="col-4 text-end">
                                 <div class="icon icon-shape bg-gradient-primary shadow text-center border-radius-md">
                                     <i class="ni ni-app text-lg opacity-10" aria-hidden="true"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+                <div class="card">
+                    <div class="card-body p-3">
+                        <div class="row">
+                            <div class="col-8">
+                                <div class="numbers">
+                                    <p class="text-sm mb-0 text-capitalize font-weight-bold">
+                                        Paiement accepté
+                                    </p>
+                                    <h5 class="font-weight-bolder mb-0">{{ counterPaiementOk }}</h5>
+                                </div>
+                            </div>
+                            <div class="col-4 text-end">
+                                <div class="icon icon-shape bg-gradient-primary shadow text-center border-radius-md">
+                                    <i class="ni ni-credit-card text-lg opacity-10" aria-hidden="true"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+                <div class="card">
+                    <div class="card-body p-3">
+                        <div class="row">
+                            <div class="col-8">
+                                <div class="numbers">
+                                    <p class="text-sm mb-0 text-capitalize font-weight-bold">
+                                        Paiement refusée
+                                    </p>
+                                    <h5 class="font-weight-bolder mb-0">{{ counterPaiementCancel }}</h5>
+                                </div>
+                            </div>
+                            <div class="col-4 text-end">
+                                <div class="icon icon-shape bg-gradient-primary shadow text-center border-radius-md">
+                                    <i class="ni ni-credit-card text-lg opacity-10" aria-hidden="true"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+                <div class="card">
+                    <div class="card-body p-3">
+                        <div class="row">
+                            <div class="col-8">
+                                <div class="numbers">
+                                    <p class="text-sm mb-0 text-capitalize font-weight-bold">
+                                        Paiement rembourser
+                                    </p>
+                                    <h5 class="font-weight-bolder mb-0">{{ counterPaiementRefund }}</h5>
+                                </div>
+                            </div>
+                            <div class="col-4 text-end">
+                                <div class="icon icon-shape bg-gradient-primary shadow text-center border-radius-md">
+                                    <i class="ni ni-credit-card text-lg opacity-10" aria-hidden="true"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4 mt-4">
+                <div class="card">
+                    <div class="card-body p-3">
+                        <div class="row">
+                            <div class="col-8">
+                                <div class="numbers">
+                                    <p class="text-sm mb-0 text-capitalize font-weight-bold">
+                                        Total des commandes
+                                    </p>
+                                    <h5 class="font-weight-bolder mb-0">
+                                        {% if totalProjectOrders != None %}
+                                        {{ totalProjectOrders|floatformat:2 }}
+                                        {% else %}
+                                        0
+                                        {% endif %}
+                                        €</h5>
+                                    </div>
+                            </div>
+                            <div class="col-4 text-end">
+                                <div class="icon icon-shape bg-gradient-primary shadow text-center border-radius-md">
+                                    <i class="ni ni-cart text-lg opacity-10" aria-hidden="true"></i>
                                 </div>
                             </div>
                         </div>
@@ -494,7 +605,7 @@
                                     <h4 class="text-gradient text-dark mb-2">{{ new.title }}</h4>
 
                                     <span class="badge badge-sm bg-gradient-secondary mb-3 mt-3">
-                                            {{ new.categorie }}
+                                        {{ new.categorie }}
                                     </span>
 
                                     <p class="mb-4 text-sm">
@@ -512,7 +623,7 @@
                                             <a href="javascript:;" class="avatar avatar-xs rounded-circle"
                                                 data-bs-toggle="tooltip" data-bs-placement="bottom"
                                                 aria-label="{{ new.author }}"
-                                                data-bs-original-title="{{ projet.author }}">
+                                                data-bs-original-title="{{ new.author }}">
                                                 <img alt="Image placeholder" src="{{ new.avatar }}">
                                             </a>
                                         </div>
@@ -528,6 +639,373 @@
         </div>
     </div>
 
+    <div class="container-fluid py-4" id="products">
+        <div class="col-12 mt-4">
+            <div class="card mb-4">
+                <div class="card-header pb-0 p-3">
+                    <h6 class="mb-1">Produits</h6>
+                </div>
+                <div class="card-body p-3">
+
+                    <div class="table-responsive">
+
+                        <table class="table align-items-center mb-0">
+
+                            <thead>
+
+                                <tr>
+                                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7" data-sortable="false"></th>
+                                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7" data-sortable="true">Produit</th>
+                                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7" data-sortable="true">Prix</th>
+                                    <th class="text-left text-uppercase text-secondary text-xxs font-weight-bolder opacity-7" data-sortable="true">Contenu</th>
+                                    <th class="text-left text-uppercase text-secondary text-xxs font-weight-bolder opacity-7" data-sortable="true">Hebergement</th>
+                                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7" data-sortable="false">Action</th>
+                                </tr>
+
+                            </thead>
+
+                            <tbody>
+
+                                {% for data in products %}
+                                
+                                <tr>
+                                    <td class="text-center">
+                                        <div class="text-center">
+                                            <i class="fa-solid fa-{{ data.product_icon }}" style="color: #{{ data.product_color }}"></i>
+                                        </div>
+                                    </td>
+                                    <td class="text-center"><h6 class="mb-0 text-sm">{{ data.product_title }}</h6></td>
+                                    <td class="text-center"><h6 class="mb-0 text-sm">{{ data.product_price }} €</h6></td>
+                                    <td><ul class="text-sm">{% autoescape off %}{{ data.product_content }}{% endautoescape %}</ul></td>
+                                    <td><ul class="text-sm">{% autoescape off %}{{ data.product_hebergement }}{% endautoescape %}</ul></td>
+                                    <td>
+                                      
+                                    </td>
+                                </tr>
+                                {% endfor %}
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid py-4">
+        <div class="col-12 mt-4">
+            <div class="card mb-4">
+                <div class="card-header pb-0 p-3">
+                    <h6 class="mb-1">Commandes d'applications</h6>
+                </div>
+                <div class="card-body p-3">
+
+                    <div class="table-responsive">
+
+                        <table class="table table align-items-center mb-0" id="dataTable" width="100%" cellspacing="0"
+                            data-click-to-select="true" data-custom-sort="customSort" data-checkbox-header="false"
+                            data-page-size="25" data-locale="fr-FR" data-show-fullscreen="true" data-show-export="true"
+                            data-show-refresh="true" data-click-to-select="true" data-detail-formatter="detailFormatter"
+                            data-pagination="true" data-search="true" data-sortable="true" data-toggle="table"
+                            data-show-columns="true">
+
+                            <thead>
+
+                                <tr>
+                                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7" data-field="state" data-checkbox="true"></th>
+                                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7" data-sortable="false"></th>
+                                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7" data-sortable="true">Produit</th>
+                                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7" data-sortable="true">Client</th>
+                                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7" data-sortable="true">Adresse email</th>
+                                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7" data-sortable="true">Type de paiement</th>
+                                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7" data-sortable="true">Statut du paiement</th>
+                                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7" data-sortable="true">Transaction</th>
+                                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7" data-sortable="true">Total</th>
+                                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7" data-sortable="true">Date du paiement</th>
+                                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7" data-sortable="true">Date du remboursement</th>
+                                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7" data-sortable="false">Action</th>
+                                </tr>
+
+                            </thead>
+
+                            <tbody>
+
+                                {% for data in orders %}
+                                
+                                <tr>
+                                    <td></td>
+                                    <td>
+                                        <div class="text-center">
+                                            <i class="fa-solid fa-{{ data.product_icon }}" style="color: #{{ data.product_color }}"></i>
+                                        </div>
+                                    </td>
+                                    <td class="text-capitalize text-center"><h6 class="text-sm mb-0">{{ data.product_title }}</h6></td>
+                                    <td class="text-capitalize text-center"><h6 class="text-sm mb-0">{{ data.firstname }} {{ data.lastname }}</h6></td>
+                                    <td class="text-capitalize text-center"><h6 class="text-sm mb-0">{{ data.email }}</h6></td>
+                                    <td class="text-capitalize text-center"><h6 class="text-sm mb-0">{{ data.order_method }}</h6></td>
+                                    <td class="text-sm text-capitalize text-center">
+                                        {% if data.status == 'COMPLETED' %}
+                                        <span class="text-success font-weight-bold"><i class="fa-solid fa-check me-2"></i>Paiement accepté</span>
+                                        {% elif data.status == 'CANCELED' %}
+                                        <span class="text-danger font-weight-bold"><i class="fa-solid fa-xmark me-2"></i>Paiement refusé</span>
+                                        {% elif data.status == 'PAYMENT_DECLINED' %}
+                                        <span class="text-danger font-weight-bold"><i class="fa-solid fa-xmark me-2"></i>Paiement refusé</span>
+                                        {% elif data.status == 'REFUND' %}
+                                        <span class="text-danger font-weight-bold"><i class="fa-solid fa-xmark me-2"></i>Paiement rembourser</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-capitalize text-center">
+                                        {% if data.transaction_id %}
+                                        <h6 class="text-sm">{{ data.transaction_id }}</h6>
+                                        {% else %}
+                                        <h6 class="text-sm">/</h6>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-capitalize text-center">
+                                        <h6 class="text-sm">{{ data.price }} €</h6>
+                                    </td>
+                                    <td class="text-capitalize text-center">
+                                        <h6 class="text-sm">{{ data.order_at }}</h6>
+                                    </td>
+                                    <td class="text-capitalize text-center">
+                                        {% if data.refund_at == None %}
+                                        <h6 class="text-sm">/</h6>
+                                        {% else %}
+                                        <h6 class="text-sm">{{ data.refund_at }}</h6>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-capitalize text-center">
+                                        {% if data.status == 'COMPLETED' %}
+                                        <a class="refund-paiement btn btn-outline-danger mb-0 btm-sm font-weight-bold" data-id="{{ data.id }}"
+                                            data-transaction="{{ data.transaction_id }}">Rembourser</a>
+                                        {% else %}
+                                        <h6 class="text-sm">/</h6>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid py-4">
+        <div class="col-12 mt-4">
+            <div class="card mb-4">
+                <div class="card-header pb-0 p-3">
+                    <h6 class="mb-1">Forums</h6>
+                </div>
+                <div class="card-body p-3">
+
+                    <div class="table-responsive">
+
+                        <table class="table align-items-center mb-0">
+
+                            <thead>
+
+                                <tr>
+                                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7" data-sortable="false"></th>
+                                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7" data-sortable="true">Titre</th>
+                                    <th class="text-left text-uppercase text-secondary text-xxs font-weight-bolder opacity-7" data-sortable="true">Description</th>
+                                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7" data-sortable="true">Sujets</th>
+                                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7" data-sortable="true">Réponses</th>
+                                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7" data-sortable="true">Vues</th>
+                                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7" data-sortable="true">Statut</th>
+                                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7" data-sortable="true">Création</th>
+                                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7" data-sortable="true">Actions</th>
+                                </tr>
+
+                            </thead>
+
+                            <tbody>
+
+                                {% for data in forums %}
+                                
+                                <tr>
+                                    <td class="text-center">
+                                        <div class="text-center">
+                                            <img width="74px" src="https://portfolio-gaetan.fr/img/forums/{{data.image}}" alt="{{ data.title }}">
+                                        </div>
+                                    </td>
+                                    <td class="text-center"><h6 class="mb-0 text-sm">{{ data.title }}</h6></td>
+                                    <td><h6 class="text-sm mb-0">{{ data.content }}</h6></td>
+                                    <td class="text-center"><h6 class="text-sm">{{ data.counterTopic }}</h6></td>
+                                    <td class="text-center"><h6 class="text-sm">{{ data.counterReplies }}</h6></td>
+                                    <td class="text-center"><h6 class="text-sm">{{ data.views }}</h6></td>
+                                    <td class="text-center">
+                                        {% if data.status == 0 %}
+                                        <span class="badge bg-gradient-danger font-weight-bold">Fermé</span>
+                                        {% else %}
+                                        <span class="badge bg-gradient-info font-weight-bold">Ouvert</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-center"><h6 class="text-sm">{{ data.created_at }}</h6></td>
+                                    <td class="text-center">
+                                        <a class="btn btn-primary btn-sm mb-0" href="https://portfolio-gaetan.fr/forums/forum/{{ data.url }}" target="_blank">Voir</a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid py-4">
+        <div class="col-12 mt-4">
+            <div class="card mb-4">
+                <div class="card-header pb-0 p-3">
+                    <h6 class="mb-1">Forums topics</h6>
+                </div>
+                <div class="card-body p-3">
+
+                    <p class="table-responsive">
+
+                        <table class="table align-items-center mb-0">
+
+                            <thead>
+
+                                <tr>
+                                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7" data-sortable="false"></th>
+                                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7" data-sortable="false">Top</th>
+                                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7" data-sortable="true">Titre</th>
+                                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7" data-sortable="true">Discussion</th>
+                                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7" data-sortable="true">Réponses</th>
+                                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7" data-sortable="true">Vues</th>
+                                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7" data-sortable="true">Statut</th>
+                                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7" data-sortable="true">Création</th>
+                                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7" data-sortable="true">Actions</th>
+                                </tr>
+
+                            </thead>
+
+                            <tbody>
+
+                                {% for data in forums_topics %}
+                                
+                                <tr>
+                                    <td class="text-center">
+                                        <p class="mb-0">
+                                        {% if data.resolved != 0 %}
+                                            <i class="fa fa-check-circle text-success" aria-hidden="true"></i>
+                                        {% endif %}
+                                        </p>
+                                    </td>
+                                    <td class="text-center">
+                                        {% if data.sticky != 0 %}
+                                        <p class="mb-0">
+                                            <span class="badge bg-gradient-success font-weight-bold">Top</span>
+                                        </p>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-center"><h6 class="mb-0 text-sm">{{ data.title }}</h6></td>
+                                    <td class="text-center"><h6 class="text-sm">0</h6></td>
+                                    <td class="text-center"><h6 class="text-sm">{{ data.counterReplies }}</h6></td>
+                                    <td class="text-center"><h6 class="text-sm">{{ data.views }}</h6></td>
+                                    <td class="text-center">
+                                        {% if data.status == 0 %}
+                                        <span class="badge bg-gradient-danger font-weight-bold">Fermé</span>
+                                        {% else %}
+                                        <span class="badge bg-gradient-info font-weight-bold">Ouvert</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-center"><h6 class="text-sm">{{ data.created_at }}</h6></td>
+                                    <td class="text-center">
+                                        <a class="btn btn-primary btn-sm mb-0" href="https://portfolio-gaetan.fr/forums/forum/topic/{{ data.url }}" target="_blank">Voir</a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+
+                            </tbody>
+
+                        </table>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
 </main>
 
 {% include 'footer.html' %}
+
+<script>
+
+    $(document).on('click', '.refund-paiement', function (e) {
+
+        e.preventDefault();
+
+        var id_order = $(this).data('id'),
+            transaction_id = $(this).data('transaction')
+
+        var deleteMsg = confirm("Voulez-vous vraiment rembourser la commande ?");
+
+        if (deleteMsg) {
+
+            $.ajax({
+                url: 'https://portfolio-gaetan.fr/api/order/refund/' + id_order + '/' + transaction_id,
+                method: 'GET',
+                data: {},
+                processData: false,
+                dataType: 'json',
+                contentType: false,
+                success: function (data) {
+
+                    if (data.status == 0) {
+
+                        console.log(data.msg)
+
+                    } else {
+
+                        console.log(data.msg)
+
+                        setTimeout(() => {
+                            location.reload()
+                        }, 3500);
+
+                    }
+                },
+                error: function (e) {
+                    console.log(e);
+                }
+            });
+
+        }
+
+    })
+
+    $(function () {
+        $('#dataTable').bootstrapTable()
+    })
+
+    function customSort(sortName, sortOrder, data) {
+        var order = sortOrder === 'desc' ? -1 : 1
+        data.sort(function (a, b) {
+            var aa = +((a[sortName] + '').replace(/[^\d]/g, ''))
+            var bb = +((b[sortName] + '').replace(/[^\d]/g, ''))
+            if (aa < bb) {
+                return order * -1
+            }
+            if (aa > bb) {
+                return order
+            }
+            return 0
+        })
+    }
+</script>

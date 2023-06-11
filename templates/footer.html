@@ -24,36 +24,13 @@
       </div>
       <a href="javascript:void(0)" class="switch-trigger background-color">
         <div class="badge-colors my-2 text-start">
-          <span
-            class="badge filter bg-gradient-primary active"
-            data-color="primary"
-            onclick="sidebarColor(this)"
-          ></span>
-          <span
-            class="badge filter bg-gradient-dark"
-            data-color="dark"
-            onclick="sidebarColor(this)"
-          ></span>
-          <span
-            class="badge filter bg-gradient-info"
-            data-color="info"
-            onclick="sidebarColor(this)"
-          ></span>
-          <span
-            class="badge filter bg-gradient-success"
-            data-color="success"
-            onclick="sidebarColor(this)"
-          ></span>
-          <span
-            class="badge filter bg-gradient-warning"
-            data-color="warning"
-            onclick="sidebarColor(this)"
-          ></span>
-          <span
-            class="badge filter bg-gradient-danger"
-            data-color="danger"
-            onclick="sidebarColor(this)"
-          ></span>
+          <span class="badge filter bg-gradient-primary active" data-color="primary"
+            onclick="sidebarColor(this)"></span>
+          <span class="badge filter bg-gradient-dark" data-color="dark" onclick="sidebarColor(this)"></span>
+          <span class="badge filter bg-gradient-info" data-color="info" onclick="sidebarColor(this)"></span>
+          <span class="badge filter bg-gradient-success" data-color="success" onclick="sidebarColor(this)"></span>
+          <span class="badge filter bg-gradient-warning" data-color="warning" onclick="sidebarColor(this)"></span>
+          <span class="badge filter bg-gradient-danger" data-color="danger" onclick="sidebarColor(this)"></span>
         </div>
       </a>
       <!-- Sidenav Type -->
@@ -62,18 +39,11 @@
         <p class="text-sm">Choisissez entre 2 types de sidenav différents.</p>
       </div>
       <div class="d-flex">
-        <button
-          class="btn bg-gradient-primary w-100 px-3 mb-2 active"
-          data-class="bg-transparent"
-          onclick="sidebarType(this)"
-        >
-        Transparente
+        <button class="btn bg-gradient-primary w-100 px-3 mb-2 active" data-class="bg-transparent"
+          onclick="sidebarType(this)">
+          Transparente
         </button>
-        <button
-          class="btn bg-gradient-primary w-100 px-3 mb-2 ms-2"
-          data-class="bg-white"
-          onclick="sidebarType(this)"
-        >
+        <button class="btn bg-gradient-primary w-100 px-3 mb-2 ms-2" data-class="bg-white" onclick="sidebarType(this)">
           Blanche
         </button>
       </div>
@@ -85,36 +55,40 @@
         <h6 class="mb-0">Barre de navigation fixe</h6>
       </div>
       <div class="form-check form-switch ps-0">
-        <input
-          class="form-check-input mt-1 ms-auto"
-          type="checkbox"
-          id="navbarFixed"
-          onclick="navbarFixed(this)"
-        />
+        <input class="form-check-input mt-1 ms-auto" type="checkbox" id="navbarFixed" onclick="navbarFixed(this)" />
       </div>
     </div>
   </div>
-</div>  
+</div>
 
 <!--   Core JS Files   -->
- <script src="{% static 'js/jquery-ui.min.js' %}"></script>
- <script src="{% static 'js/plugins/perfect-scrollbar.min.js' %}"></script>
- <script src="{% static 'js/plugins/smooth-scrollbar.min.js' %}"></script>
- <script src="{% static 'js/plugins/chartjs.min.js' %}"></script>
- <script>
-   var win = navigator.platform.indexOf('Win') > -1;
-   if (win && document.querySelector('#sidenav-scrollbar')) {
-     var options = {
-       damping: '0.5'
-     }
-     Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
-   }
- </script>
- <!-- Github buttons -->
- <script async defer src="https://buttons.github.io/buttons.js"></script>
- <!-- Control Center for Soft Dashboard: parallax effects, scripts for the example pages etc -->
- <script src="{% static 'js/soft-ui-dashboard.min.js' %}"></script>
- <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.19.1/moment.min.js"></script>
- 
+<script src="https://cdn.jsdelivr.net/npm/tableexport.jquery.plugin@1.10.21/tableExport.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/tableexport.jquery.plugin@1.10.21/libs/jsPDF/jspdf.min.js"></script>
+<script
+  src="https://cdn.jsdelivr.net/npm/tableexport.jquery.plugin@1.10.21/libs/jsPDF-AutoTable/jspdf.plugin.autotable.js">
+  </script>
+<script src="https://unpkg.com/bootstrap-table@1.21.4/dist/bootstrap-table.min.js"></script>
+<script src="https://unpkg.com/bootstrap-table@1.21.4/dist/bootstrap-table-locale-all.min.js"></script>
+<script src="https://unpkg.com/bootstrap-table@1.21.4/dist/extensions/export/bootstrap-table-export.min.js"></script>
+<script src="{% static 'js/jquery-ui.min.js' %}"></script>
+<script src="{% static 'js/plugins/perfect-scrollbar.min.js' %}"></script>
+<script src="{% static 'js/plugins/smooth-scrollbar.min.js' %}"></script>
+<script src="{% static 'js/plugins/chartjs.min.js' %}"></script>
+<script>
+  var win = navigator.platform.indexOf('Win') > -1;
+  if (win && document.querySelector('#sidenav-scrollbar')) {
+    var options = {
+      damping: '0.5'
+    }
+    Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
+  }
+</script>
+<!-- Github buttons -->
+<script async defer src="https://buttons.github.io/buttons.js"></script>
+<!-- Control Center for Soft Dashboard: parallax effects, scripts for the example pages etc -->
+<script src="{% static 'js/soft-ui-dashboard.min.js' %}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.19.1/moment.min.js"></script>
+
 </body>
+
 </html>

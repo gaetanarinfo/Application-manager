@@ -1,7 +1,7 @@
 # import Http Response from django
 from getpass import getuser
 from django.shortcuts import render, redirect
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm, CreateCardForm
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import logout
@@ -13,6 +13,11 @@ from django.contrib.auth.models import (
     News,
     UsersCards,
     usersStatements,
+    Orders,
+    Products,
+    NewsBakery,
+    RatingsBakery,
+    NewsLEP,
 )
 from django.contrib import messages
 import requests
@@ -20,15 +25,27 @@ from requests.structures import CaseInsensitiveDict
 from dotenv import load_dotenv
 import os
 from .forms import UpdateUserForm
+from .forms import UpdateCardForm
+from .forms import CreateDocForm
+from datetime import datetime
+from django.utils import timezone
+from django.db import connections
+import pytz
+from django.core.files.storage import FileSystemStorage
+from django.db.models import Avg, Max, Min, Sum
 import json
+import math
 
 load_dotenv()
 
 
-# Home page
-def home(request):
-    context = {"title": "Applications manager"}
-    return render(request, "pages/home.html", context)
+def dictfetchall(cursor):
+    """
+    Return all rows from a cursor as a dict.
+    Assume the column names are unique.
+    """
+    columns = [col[0] for col in cursor.description]
+    return [dict(zip(columns, row)) for row in cursor.fetchall()]
 
 
 def sort_by_key(list):
@@ -183,7 +200,7 @@ def signin(request):
     if request.user.is_authenticated:
         context = {"title": "Applications manager", "page": "Accueil"}
         # return response with template and context
-        return render(request, "pages/dashboard.html", context)
+        return redirect("/dashboard")
     if request.method == "POST":
         username = request.POST["username"]
         password = request.POST["password"]
@@ -212,59 +229,59 @@ def signin(request):
 
 
 # Register page
-def signup(request):  # sourcery skip: extract-method, remove-unnecessary-else
-    if request.user.is_authenticated:
-        return redirect("/login")
+# def signup(request):  # sourcery skip: extract-method, remove-unnecessary-else
+#     if request.user.is_authenticated:
+#         return redirect("/login")
 
-    if request.method == "POST":
-        user = User.objects.exists()
+#     if request.method == "POST":
+#         user = User.objects.exists()
 
-        if user:
-            username = request.POST["username"]
-            password = request.POST["password1"]
+#         if user:
+#             username = request.POST["username"]
+#             password = request.POST["password1"]
 
-            user_email = user.email
-            user_username = user.username
-            if (
-                user_username != request.POST["username"]
-                and user.get_email() != request.POST["email"]
-            ):
-                form = UserCreationForm(request.POST)
+#             user_email = user.email
+#             user_username = user.username
+#             if (
+#                 user_username != request.POST["username"]
+#                 and user.get_email() != request.POST["email"]
+#             ):
+#                 form = UserCreationForm(request.POST)
 
-                form.save()
+#                 form.save()
 
-                return redirect("/login")
-            elif user_email == request.POST["email"]:
-                msg = "Votre adresse email est déjà présent dans notre base !"
-                form = UserCreationForm(request.POST)
-                context = {
-                    "title": "Inscription - Applications manager",
-                    "form": form,
-                    "msg": msg,
-                }
-                return render(request, "pages/sign-up.html", context)
-            else:
-                msg = "Votre identifiant est déjà présent dans notre base !"
-                form = UserCreationForm(request.POST)
-                context = {
-                    "title": "Inscription - Applications manager",
-                    "form": form,
-                    "msg": msg,
-                }
-                return render(request, "pages/sign-up.html", context)
-        else:
-            form = UserCreationForm(request.POST)
-            form.save()
-            context = {
-                "title": "Inscription - Applications manager",
-                "form": form,
-            }
-            return redirect("/login")
-    else:
-        context = {
-            "title": "Inscription - Applications manager",
-        }
-        return render(request, "pages/sign-up.html", context)
+#                 return redirect("/login")
+#             elif user_email == request.POST["email"]:
+#                 msg = "Votre adresse email est déjà présent dans notre base !"
+#                 form = UserCreationForm(request.POST)
+#                 context = {
+#                     "title": "Inscription - Applications manager",
+#                     "form": form,
+#                     "msg": msg,
+#                 }
+#                 return render(request, "pages/sign-up.html", context)
+#             else:
+#                 msg = "Votre identifiant est déjà présent dans notre base !"
+#                 form = UserCreationForm(request.POST)
+#                 context = {
+#                     "title": "Inscription - Applications manager",
+#                     "form": form,
+#                     "msg": msg,
+#                 }
+#                 return render(request, "pages/sign-up.html", context)
+#         else:
+#             form = UserCreationForm(request.POST)
+#             form.save()
+#             context = {
+#                 "title": "Inscription - Applications manager",
+#                 "form": form,
+#             }
+#             return redirect("/login")
+#     else:
+#         context = {
+#             "title": "Inscription - Applications manager",
+#         }
+#         return render(request, "pages/sign-up.html", context)
 
 
 # Logout page
@@ -288,61 +305,103 @@ def handler500(request):
 
 def portfolio(request):
     if request.user.is_authenticated:
-        arrayPortfolioConfig = {}
-        arrayPortfolioConfigClient = {}
+        if request.user.is_staff:
+            arrayPortfolioConfig = {}
+            arrayPortfolioConfigClient = {}
 
-        # File .env in portfolio
-        path = "/var/www/portfolio-back/.env"
-        with open(path) as fn:
-            for line in fn:
-                key, desc = line.strip().split("=", 1)
-                desc = desc.replace('"', "")
-                arrayPortfolioConfig[key] = desc.strip()
+            # File .env in portfolio
+            path = "/var/www/portfolio-back/.env"
+            with open(path) as fn:
+                for line in fn:
+                    key, desc = line.strip().split("=", 1)
+                    desc = desc.replace('"', "")
+                    arrayPortfolioConfig[key] = desc.strip()
 
-        path = "/var/www/portfolio/.env"
-        with open(path) as fn:
-            for line in fn:
-                key, desc = line.strip().split("=", 1)
-                arrayPortfolioConfigClient[key] = desc.strip()
+            path = "/var/www/portfolio/.env"
+            with open(path) as fn:
+                for line in fn:
+                    key, desc = line.strip().split("=", 1)
+                    arrayPortfolioConfigClient[key] = desc.strip()
 
-        projets = (
-            Projets.objects.using("portfolio_db")
-            .filter(active=1)
-            .order_by("-created_at")
-            .all()
-        )
+            projets = (
+                Projets.objects.using("portfolio_db")
+                .filter(active=1)
+                .order_by("-created_at")
+                .all()
+            )
 
-        projetsCount = (
-            Projets.objects.using("portfolio_db")
-            .filter(active=1, author=request.user.username)
-            .count()
-        )
+            projetsCount = (
+                Projets.objects.using("portfolio_db")
+                .filter(active=1, author=request.user.username)
+                .count()
+            )
 
-        usersProjets = (
-            ProjetsUsers.objects.using("portfolio_db")
-            .filter(active=1)
-            .order_by("-created_at")
-            .all()
-        )
+            usersProjets = (
+                ProjetsUsers.objects.using("portfolio_db")
+                .filter(active=1)
+                .order_by("-created_at")
+                .all()
+            )
 
-        news = (
-            News.objects.using("portfolio_db")
-            .filter(active=1)
-            .order_by("-created_at")
-            .all()
-        )
+            news = (
+                News.objects.using("portfolio_db")
+                .filter(active=1)
+                .order_by("-created_at")
+                .all()
+            )
 
-        context = {
-            "title": "Portfolio - Applications manager",
-            "page": "Portfolio",
-            "counterProjets": projetsCount,
-            "projets": projets,
-            "usersProjets": usersProjets,
-            "configPortfolio": arrayPortfolioConfig,
-            "configPortfolioClient": arrayPortfolioConfigClient,
-            "news": news,
-        }
-        return render(request, "pages/portfolio.html", context)
+            # Projects Portfolio
+            counterPaiementOk = (
+                Orders.objects.using("portfolio_db").filter(status="COMPLETED").count()
+            )
+            counterPaiementCancel = (
+                Orders.objects.using("portfolio_db").filter(status="CANCELED").count()
+            )
+            counterPaiementRefund = (
+                Orders.objects.using("portfolio_db").filter(status="REFUND").count()
+            )
+            totalProjectOrders = (
+                Orders.objects.using("portfolio_db")
+                .filter(status="COMPLETED")
+                .aggregate(Sum("price", distinct=True))
+            )
+            cursor = connections["portfolio_db"].cursor()
+            cursor.execute("call OrdersView()")
+            orders = dictfetchall(cursor)
+            products = (
+                Products.objects.using("portfolio_db").order_by("-product_id").all()
+            )
+
+            # Forum Portfolio
+            cursor = connections["portfolio_db"].cursor()
+            cursor.execute("call Forums()")
+            forums = dictfetchall(cursor)
+
+            cursor = connections["portfolio_db"].cursor()
+            cursor.execute("call ForumsTopics()")
+            forums_topics = dictfetchall(cursor)
+
+            context = {
+                "title": "Portfolio - Applications manager",
+                "page": "Portfolio",
+                "counterProjets": projetsCount,
+                "projets": projets,
+                "usersProjets": usersProjets,
+                "configPortfolio": arrayPortfolioConfig,
+                "configPortfolioClient": arrayPortfolioConfigClient,
+                "news": news,
+                "counterPaiementOk": counterPaiementOk,
+                "counterPaiementCancel": counterPaiementCancel,
+                "counterPaiementRefund": counterPaiementRefund,
+                "totalProjectOrders": totalProjectOrders["price__sum"],
+                "orders": orders,
+                "products": products,
+                "forums": forums,
+                "forums_topics": forums_topics,
+            }
+            return render(request, "pages/portfolio.html", context)
+        else:
+            return redirect("/dashboard")
     else:
         context = {"title": "Connexion - Applications manager"}
         return render(request, "pages/sign-in.html", context)
@@ -350,29 +409,258 @@ def portfolio(request):
 
 def accountBank(request):
     if request.user.is_authenticated:
+        if request.user.is_staff:
+            usersCards = (
+                UsersCards.objects.using("auth_db")
+                .filter(user_id=request.user.id)
+                .order_by("-id")
+                .all()
+            )
+
+            if usersCards.count() != 0:
+                userCard = (
+                    UsersCards.objects.using("auth_db")
+                    .filter(user_id=request.user.id)
+                    .order_by("id")
+                    .all()
+                )
+            else:
+                userCard = []
+
+            usersStatement = (
+                usersStatements.objects.using("auth_db")
+                .filter(user_id=request.user.id)
+                .order_by("-created_at")
+                .all()
+            )
+
+            month = [
+                "janvier",
+                "février",
+                "mars",
+                "avril",
+                "mai",
+                "juin",
+                "juillet",
+                "août",
+                "septembre",
+                "octobre",
+                "noveambre",
+                "décembre",
+            ]
+            dataEntrees = []
+            dataSorties = []
+
+            if request.GET.get("year"):
+                year = request.GET.get("year")
+            else:
+                today = timezone.now()
+                year = today.strftime("%Y")
+
+            for value in month:
+                if usersStatements.objects.filter(date=value + " " + year).exists():
+                    usersEntreesChart = (
+                        usersStatements.objects.using("auth_db")
+                        .values("entrees")
+                        .filter(user_id=request.user.id, date=value + " " + year)
+                        .annotate(entree=Avg("entrees"))
+                        .order_by("date")
+                        .get()
+                    )
+                    dataEntrees.append(usersEntreesChart["entree"])
+                else:
+                    dataEntrees.append(0)
+                    None
+
+                if usersStatements.objects.filter(date=value + " " + year).exists():
+                    usersSortiesChart = (
+                        usersStatements.objects.using("auth_db")
+                        .values("sorties")
+                        .filter(user_id=request.user.id, date=value + " " + year)
+                        .annotate(entree=Avg("sorties"))
+                        .order_by("date")
+                        .get()
+                    )
+                    dataSorties.append(usersSortiesChart["entree"])
+                else:
+                    dataSorties.append(0)
+                    None
+
+                pass
+
+            if request.GET.get("page") != None:
+                page_get = request.GET.get("page")
+            else:
+                page_get = "1"
+
+            # Qonto
+            url = "https://thirdparty.qonto.com/v2/organization"
+            headers = CaseInsensitiveDict()
+            headers["Accept"] = "application/json; charset=utf-8"
+            headers["Authorization"] = os.environ.get("KEY_QONTO")
+            resp = requests.get(url, headers=headers)
+            data_json = resp.json()
+            url3 = (
+                "https://thirdparty.qonto.com/v2/transactions?iban="
+                + data_json["organization"]["bank_accounts"][0]["iban"]
+                + "&per_page=100&current_page="
+                + page_get
+            )
+            headers3 = CaseInsensitiveDict()
+            headers3["Accept"] = "application/json; charset=utf-8"
+            headers3["Authorization"] = os.environ.get("KEY_QONTO")
+            resp3 = requests.get(url3, headers=headers3)
+            data_json4 = resp3.json()
+
+            totalPage = (data_json4["meta"]["total_count"]) / 100
+
+            list = []
+            for i in range(round(totalPage) + 1):
+                if i != 0:
+                    list.append(i)
+
+            page_number = page_get
+            page_before_number = int(page_get) - 1
+            page_after_number = int(page_get) + 1
+
+            userCardCount = UsersCards.objects.using("auth_db").count()
+
+            context = {
+                "title": "Compte bancaire - Applications manager",
+                "page": "Compte bancaire",
+                "usersCards": usersCards,
+                "userCard": userCard,
+                "userCardCcaount": userCardCount,
+                "balanceQonto": data_json["organization"]["bank_accounts"][0][
+                    "authorized_balance"
+                ],
+                "usersStatement": usersStatement[0:5],
+                "qontoList": data_json4["transactions"][0:100],
+                "qontoListPaginationTotalPage": list,
+                "page_number": int(page_number),
+                "page_before_number": page_before_number,
+                "page_after_number": page_after_number,
+                "total_page": round(totalPage),
+                "dataEntrees": dataEntrees,
+                "dataSorties": dataSorties,
+            }
+
+            return render(request, "pages/account-bank.html", context)
+        else:
+            return redirect("/dashboard")
+    else:
+        context = {"title": "Connexion - Applications manager"}
+        return render(request, "pages/sign-in.html", context)
+
+
+def statementsAccountBank(request):
+    if request.user.is_authenticated:
+        if request.user.is_staff:
+            usersStatement = (
+                usersStatements.objects.using("auth_db")
+                .filter(user_id=request.user.id)
+                .order_by("-created_at")
+                .all()
+            )
+
+            context = {
+                "title": "Relevés de compte bancaire - Applications manager",
+                "page": "Relevés de compte bancaire",
+                "usersStatement": usersStatement,
+            }
+            return render(request, "pages/statements-account-bank.html", context)
+        else:
+            return redirect("/dashboard")
+    else:
+        context = {"title": "Connexion - Applications manager"}
+        return render(request, "pages/sign-in.html", context)
+
+
+def addCard(request):
+    if request.user.is_staff:
         usersCards = (
             UsersCards.objects.using("auth_db")
             .filter(user_id=request.user.id)
-            .order_by("-created_at")
+            .order_by("-id")
             .all()
         )
 
-        userCard = (
-            UsersCards.objects.using("auth_db")
-            .filter(user_id=request.user.id)
-            .order_by("-created_at")
-            .get()
-        )
-        
+        if usersCards.count() != 0:
+            userCard = (
+                UsersCards.objects.using("auth_db")
+                .filter(user_id=request.user.id)
+                .order_by("id")
+                .all()
+            )
+        else:
+            userCard = []
+
         usersStatement = (
             usersStatements.objects.using("auth_db")
             .filter(user_id=request.user.id)
             .order_by("-created_at")
             .all()
         )
-        
-        print(request.GET.get("page"))
-        
+
+        if request.GET.get("page") != None:
+            page_get = request.GET.get("page")
+        else:
+            page_get = "1"
+
+        month = [
+            "janvier",
+            "février",
+            "mars",
+            "avril",
+            "mai",
+            "juin",
+            "juillet",
+            "août",
+            "septembre",
+            "octobre",
+            "noveambre",
+            "décembre",
+        ]
+        dataEntrees = []
+        dataSorties = []
+
+        if request.GET.get("year"):
+            year = request.GET.get("year")
+        else:
+            today = timezone.now()
+            year = today.strftime("%Y")
+
+        for value in month:
+            if usersStatements.objects.filter(date=value + " " + year).exists():
+                usersEntreesChart = (
+                    usersStatements.objects.using("auth_db")
+                    .values("entrees")
+                    .filter(user_id=request.user.id, date=value + " " + year)
+                    .annotate(entree=Avg("entrees"))
+                    .order_by("date")
+                    .get()
+                )
+                dataEntrees.append(usersEntreesChart["entree"])
+            else:
+                dataEntrees.append(0)
+                None
+
+            if usersStatements.objects.filter(date=value + " " + year).exists():
+                usersSortiesChart = (
+                    usersStatements.objects.using("auth_db")
+                    .values("sorties")
+                    .filter(user_id=request.user.id, date=value + " " + year)
+                    .annotate(entree=Avg("sorties"))
+                    .order_by("date")
+                    .get()
+                )
+                dataSorties.append(usersSortiesChart["entree"])
+            else:
+                dataSorties.append(0)
+                None
+
+            pass
+
         if request.GET.get("page") != None:
             page_get = request.GET.get("page")
         else:
@@ -387,30 +675,35 @@ def accountBank(request):
         data_json = resp.json()
         url3 = (
             "https://thirdparty.qonto.com/v2/transactions?iban="
-            + data_json["organization"]["bank_accounts"][0]["iban"] + "&per_page=100&current_page=" + page_get
+            + data_json["organization"]["bank_accounts"][0]["iban"]
+            + "&per_page=100&current_page="
+            + page_get
         )
         headers3 = CaseInsensitiveDict()
         headers3["Accept"] = "application/json; charset=utf-8"
         headers3["Authorization"] = os.environ.get("KEY_QONTO")
         resp3 = requests.get(url3, headers=headers3)
         data_json4 = resp3.json()
-        
-        totalPage = (data_json4["meta"]["total_count"]) / 100 - 1
-        
+
+        totalPage = (data_json4["meta"]["total_count"]) / 100
+
         list = []
-        for i in range(round(totalPage)):
+        for i in range(round(totalPage) + 1):
             if i != 0:
-             list.append(i)
-             
+                list.append(i)
+
         page_number = page_get
         page_before_number = int(page_get) - 1
         page_after_number = int(page_get) + 1
-        
+
+        userCardCount = UsersCards.objects.using("auth_db").count()
+
         context = {
             "title": "Compte bancaire - Applications manager",
             "page": "Compte bancaire",
             "usersCards": usersCards,
             "userCard": userCard,
+            "userCardCcaount": userCardCount,
             "balanceQonto": data_json["organization"]["bank_accounts"][0][
                 "authorized_balance"
             ],
@@ -418,29 +711,746 @@ def accountBank(request):
             "qontoList": data_json4["transactions"][0:100],
             "qontoListPaginationTotalPage": list,
             "page_number": int(page_number),
-            "page_before_number" : page_before_number,
-            "page_after_number" : page_after_number
+            "page_before_number": page_before_number,
+            "page_after_number": page_after_number,
+            "total_page": round(totalPage),
+            "dataEntrees": dataEntrees,
+            "dataSorties": dataSorties,
         }
-        return render(request, "pages/account-bank.html", context)
+
+        if request.method == "POST":
+            card_form = CreateCardForm(request.POST)
+            if card_form.is_valid():
+                card_form.save()
+                msg = "Votre carte a bien été ajoutée !"
+                context = {
+                    "title": "Compte bancaire - Applications manager",
+                    "page": "Compte bancaire",
+                    "usersCards": usersCards,
+                    "userCardCcaount": userCardCount,
+                    "userCard": userCard,
+                    "balanceQonto": data_json["organization"]["bank_accounts"][0][
+                        "authorized_balance"
+                    ],
+                    "usersStatement": usersStatement[0:5],
+                    "qontoList": data_json4["transactions"][0:100],
+                    "qontoListPaginationTotalPage": list,
+                    "page_number": int(page_number),
+                    "page_before_number": page_before_number,
+                    "page_after_number": page_after_number,
+                    "total_page": round(totalPage),
+                    "msg": msg,
+                    "msg_status": "success",
+                    "dataEntrees": dataEntrees,
+                    "dataSorties": dataSorties,
+                }
+                return render(request, "pages/account-bank.html", context)
+            else:
+                msg = "Une erreur est survenu !"
+                context = {
+                    "title": "Compte bancaire - Applications manager",
+                    "page": "Compte bancaire",
+                    "usersCards": usersCards,
+                    "userCardCcaount": userCardCount,
+                    "userCard": userCard,
+                    "balanceQonto": data_json["organization"]["bank_accounts"][0][
+                        "authorized_balance"
+                    ],
+                    "usersStatement": usersStatement[0:5],
+                    "qontoList": data_json4["transactions"][0:100],
+                    "qontoListPaginationTotalPage": list,
+                    "page_number": int(page_number),
+                    "page_before_number": page_before_number,
+                    "page_after_number": page_after_number,
+                    "total_page": round(totalPage),
+                    "msg": msg,
+                    "msg_status": "danger",
+                    "dataEntrees": dataEntrees,
+                    "dataSorties": dataSorties,
+                }
+                return render(request, "pages/account-bank.html", context)
+
     else:
         context = {"title": "Connexion - Applications manager"}
         return render(request, "pages/sign-in.html", context)
 
-def statementsAccountBank(request):
-    if request.user.is_authenticated:
+
+def updateCard(request):
+    if request.user.is_staff:
+        usersCards = (
+            UsersCards.objects.using("auth_db")
+            .filter(user_id=request.user.id)
+            .order_by("-id")
+            .all()
+        )
+
+        if usersCards.count() != 0:
+            userCard = (
+                UsersCards.objects.using("auth_db")
+                .filter(user_id=request.user.id)
+                .order_by("id")
+                .all()
+            )
+        else:
+            userCard = []
+
         usersStatement = (
             usersStatements.objects.using("auth_db")
             .filter(user_id=request.user.id)
             .order_by("-created_at")
             .all()
         )
-        
+
+        if request.GET.get("page") != None:
+            page_get = request.GET.get("page")
+        else:
+            page_get = "1"
+
+        month = [
+            "janvier",
+            "février",
+            "mars",
+            "avril",
+            "mai",
+            "juin",
+            "juillet",
+            "août",
+            "septembre",
+            "octobre",
+            "noveambre",
+            "décembre",
+        ]
+        dataEntrees = []
+        dataSorties = []
+
+        if request.GET.get("year"):
+            year = request.GET.get("year")
+        else:
+            today = timezone.now()
+            year = today.strftime("%Y")
+
+        for value in month:
+            if usersStatements.objects.filter(date=value + " " + year).exists():
+                usersEntreesChart = (
+                    usersStatements.objects.using("auth_db")
+                    .values("entrees")
+                    .filter(user_id=request.user.id, date=value + " " + year)
+                    .annotate(entree=Avg("entrees"))
+                    .order_by("date")
+                    .get()
+                )
+                dataEntrees.append(usersEntreesChart["entree"])
+            else:
+                dataEntrees.append(0)
+                None
+
+            if usersStatements.objects.filter(date=value + " " + year).exists():
+                usersSortiesChart = (
+                    usersStatements.objects.using("auth_db")
+                    .values("sorties")
+                    .filter(user_id=request.user.id, date=value + " " + year)
+                    .annotate(entree=Avg("sorties"))
+                    .order_by("date")
+                    .get()
+                )
+                dataSorties.append(usersSortiesChart["entree"])
+            else:
+                dataSorties.append(0)
+                None
+
+            pass
+
+        if request.GET.get("page") != None:
+            page_get = request.GET.get("page")
+        else:
+            page_get = "1"
+
+        # Qonto
+        url = "https://thirdparty.qonto.com/v2/organization"
+        headers = CaseInsensitiveDict()
+        headers["Accept"] = "application/json; charset=utf-8"
+        headers["Authorization"] = os.environ.get("KEY_QONTO")
+        resp = requests.get(url, headers=headers)
+        data_json = resp.json()
+        url3 = (
+            "https://thirdparty.qonto.com/v2/transactions?iban="
+            + data_json["organization"]["bank_accounts"][0]["iban"]
+            + "&per_page=100&current_page="
+            + page_get
+        )
+        headers3 = CaseInsensitiveDict()
+        headers3["Accept"] = "application/json; charset=utf-8"
+        headers3["Authorization"] = os.environ.get("KEY_QONTO")
+        resp3 = requests.get(url3, headers=headers3)
+        data_json4 = resp3.json()
+
+        totalPage = (data_json4["meta"]["total_count"]) / 100
+
+        list = []
+        for i in range(round(totalPage) + 1):
+            if i != 0:
+                list.append(i)
+
+        page_number = page_get
+        page_before_number = int(page_get) - 1
+        page_after_number = int(page_get) + 1
+
+        userCardCount = UsersCards.objects.using("auth_db").count()
+
         context = {
-            "title": "Relevés de compte bancaire - Applications manager",
-            "page": "Relevés de compte bancaire",
-            "usersStatement": usersStatement
+            "title": "Compte bancaire - Applications manager",
+            "page": "Compte bancaire",
+            "usersCards": usersCards,
+            "userCard": userCard,
+            "userCardCcaount": userCardCount,
+            "balanceQonto": data_json["organization"]["bank_accounts"][0][
+                "authorized_balance"
+            ],
+            "usersStatement": usersStatement[0:5],
+            "qontoList": data_json4["transactions"][0:100],
+            "qontoListPaginationTotalPage": list,
+            "page_number": int(page_number),
+            "page_before_number": page_before_number,
+            "page_after_number": page_after_number,
+            "total_page": round(totalPage),
+            "dataEntrees": dataEntrees,
+            "dataSorties": dataSorties,
+        }
+
+        if request.method == "POST":
+            band = UsersCards.objects.get(id=request.POST["id"])
+
+            card_form = UpdateCardForm(request.POST, instance=band)
+            print(request.POST["id"])
+            if card_form.is_valid():
+                card_form.save()
+                msg = "Votre carte a bien été mise à jour !"
+                context = {
+                    "title": "Compte bancaire - Applications manager",
+                    "page": "Compte bancaire",
+                    "usersCards": usersCards,
+                    "userCardCcaount": userCardCount,
+                    "userCard": userCard,
+                    "balanceQonto": data_json["organization"]["bank_accounts"][0][
+                        "authorized_balance"
+                    ],
+                    "usersStatement": usersStatement[0:5],
+                    "qontoList": data_json4["transactions"][0:100],
+                    "qontoListPaginationTotalPage": list,
+                    "page_number": int(page_number),
+                    "page_before_number": page_before_number,
+                    "page_after_number": page_after_number,
+                    "total_page": round(totalPage),
+                    "msg": msg,
+                    "msg_status": "success",
+                    "dataEntrees": dataEntrees,
+                    "dataSorties": dataSorties,
+                }
+                return render(request, "pages/account-bank.html", context)
+            else:
+                msg = "Une erreur est survenu !"
+                context = {
+                    "title": "Compte bancaire - Applications manager",
+                    "page": "Compte bancaire",
+                    "usersCards": usersCards,
+                    "userCardCcaount": userCardCount,
+                    "userCard": userCard,
+                    "balanceQonto": data_json["organization"]["bank_accounts"][0][
+                        "authorized_balance"
+                    ],
+                    "usersStatement": usersStatement[0:5],
+                    "qontoList": data_json4["transactions"][0:100],
+                    "qontoListPaginationTotalPage": list,
+                    "page_number": int(page_number),
+                    "page_before_number": page_before_number,
+                    "page_after_number": page_after_number,
+                    "total_page": round(totalPage),
+                    "msg": msg,
+                    "msg_status": "danger",
+                    "dataEntrees": dataEntrees,
+                    "dataSorties": dataSorties,
+                }
+                return render(request, "pages/account-bank.html", context)
+
+        return render(request, "pages/account-bank.html", context)
+    else:
+        context = {"title": "Connexion - Applications manager"}
+        return render(request, "pages/sign-in.html", context)
+
+
+def deleteCard(request):
+    if request.user.is_staff:
+        usersCards = (
+            UsersCards.objects.using("auth_db")
+            .filter(user_id=request.user.id)
+            .order_by("-id")
+            .all()
+        )
+
+        if usersCards.count() != 0:
+            userCard = (
+                UsersCards.objects.using("auth_db")
+                .filter(user_id=request.user.id)
+                .order_by("id")
+                .all()
+            )
+        else:
+            userCard = []
+
+        usersStatement = (
+            usersStatements.objects.using("auth_db")
+            .filter(user_id=request.user.id)
+            .order_by("-created_at")
+            .all()
+        )
+
+        if request.GET.get("page") != None:
+            page_get = request.GET.get("page")
+        else:
+            page_get = "1"
+
+        month = [
+            "janvier",
+            "février",
+            "mars",
+            "avril",
+            "mai",
+            "juin",
+            "juillet",
+            "août",
+            "septembre",
+            "octobre",
+            "noveambre",
+            "décembre",
+        ]
+        dataEntrees = []
+        dataSorties = []
+
+        if request.GET.get("year"):
+            year = request.GET.get("year")
+        else:
+            today = timezone.now()
+            year = today.strftime("%Y")
+
+        for value in month:
+            if usersStatements.objects.filter(date=value + " " + year).exists():
+                usersEntreesChart = (
+                    usersStatements.objects.using("auth_db")
+                    .values("entrees")
+                    .filter(user_id=request.user.id, date=value + " " + year)
+                    .annotate(entree=Avg("entrees"))
+                    .order_by("date")
+                    .get()
+                )
+                dataEntrees.append(usersEntreesChart["entree"])
+            else:
+                dataEntrees.append(0)
+                None
+
+            if usersStatements.objects.filter(date=value + " " + year).exists():
+                usersSortiesChart = (
+                    usersStatements.objects.using("auth_db")
+                    .values("sorties")
+                    .filter(user_id=request.user.id, date=value + " " + year)
+                    .annotate(entree=Avg("sorties"))
+                    .order_by("date")
+                    .get()
+                )
+                dataSorties.append(usersSortiesChart["entree"])
+            else:
+                dataSorties.append(0)
+                None
+
+            pass
+
+        if request.GET.get("page") != None:
+            page_get = request.GET.get("page")
+        else:
+            page_get = "1"
+
+        # Qonto
+        url = "https://thirdparty.qonto.com/v2/organization"
+        headers = CaseInsensitiveDict()
+        headers["Accept"] = "application/json; charset=utf-8"
+        headers["Authorization"] = os.environ.get("KEY_QONTO")
+        resp = requests.get(url, headers=headers)
+        data_json = resp.json()
+        url3 = (
+            "https://thirdparty.qonto.com/v2/transactions?iban="
+            + data_json["organization"]["bank_accounts"][0]["iban"]
+            + "&per_page=100&current_page="
+            + page_get
+        )
+        headers3 = CaseInsensitiveDict()
+        headers3["Accept"] = "application/json; charset=utf-8"
+        headers3["Authorization"] = os.environ.get("KEY_QONTO")
+        resp3 = requests.get(url3, headers=headers3)
+        data_json4 = resp3.json()
+
+        totalPage = (data_json4["meta"]["total_count"]) / 100
+
+        list = []
+        for i in range(round(totalPage) + 1):
+            if i != 0:
+                list.append(i)
+
+        page_number = page_get
+        page_before_number = int(page_get) - 1
+        page_after_number = int(page_get) + 1
+
+        userCardCount = UsersCards.objects.using("auth_db").count()
+
+        context = {
+            "title": "Compte bancaire - Applications manager",
+            "page": "Compte bancaire",
+            "usersCards": usersCards,
+            "userCard": userCard,
+            "userCardCcaount": userCardCount,
+            "balanceQonto": data_json["organization"]["bank_accounts"][0][
+                "authorized_balance"
+            ],
+            "usersStatement": usersStatement[0:5],
+            "qontoList": data_json4["transactions"][0:100],
+            "qontoListPaginationTotalPage": list,
+            "page_number": int(page_number),
+            "page_before_number": page_before_number,
+            "page_after_number": page_after_number,
+            "total_page": round(totalPage),
+            "dataEntrees": dataEntrees,
+            "dataSorties": dataSorties,
+        }
+
+        band = UsersCards.objects.get(id=request.POST["id"])
+
+        if band != False:
+            UsersCards.objects.filter(id=request.POST["id"]).delete()
+            msg = "Votre carte a bien été supprimer !"
+            context = {
+                "title": "Compte bancaire - Applications manager",
+                "page": "Compte bancaire",
+                "usersCards": usersCards,
+                "userCardCcaount": userCardCount,
+                "userCard": userCard,
+                "balanceQonto": data_json["organization"]["bank_accounts"][0][
+                    "authorized_balance"
+                ],
+                "usersStatement": usersStatement[0:5],
+                "qontoList": data_json4["transactions"][0:100],
+                "qontoListPaginationTotalPage": list,
+                "page_number": int(page_number),
+                "page_before_number": page_before_number,
+                "page_after_number": page_after_number,
+                "total_page": round(totalPage),
+                "msg": msg,
+                "msg_status": "success",
+                "dataEntrees": dataEntrees,
+                "dataSorties": dataSorties,
             }
-        return render(request, "pages/statements-account-bank.html", context)
+            return render(request, "pages/account-bank.html", context)
+        else:
+            msg = "Une erreur est survenu !"
+            context = {
+                "title": "Compte bancaire - Applications manager",
+                "page": "Compte bancaire",
+                "usersCards": usersCards,
+                "userCardCcaount": userCardCount,
+                "userCard": userCard,
+                "balanceQonto": data_json["organization"]["bank_accounts"][0][
+                    "authorized_balance"
+                ],
+                "usersStatement": usersStatement[0:5],
+                "qontoList": data_json4["transactions"][0:100],
+                "qontoListPaginationTotalPage": list,
+                "page_number": int(page_number),
+                "page_before_number": page_before_number,
+                "page_after_number": page_after_number,
+                "total_page": round(totalPage),
+                "msg": msg,
+                "msg_status": "danger",
+                "dataEntrees": dataEntrees,
+                "dataSorties": dataSorties,
+            }
+            return render(request, "pages/account-bank.html", context)
+
+    else:
+        context = {"title": "Connexion - Applications manager"}
+        return render(request, "pages/sign-in.html", context)
+
+
+def addDoc(request):
+    if request.user.is_staff:
+        usersCards = (
+            UsersCards.objects.using("auth_db")
+            .filter(user_id=request.user.id)
+            .order_by("-id")
+            .all()
+        )
+
+        if usersCards.count() != 0:
+            userCard = (
+                UsersCards.objects.using("auth_db")
+                .filter(user_id=request.user.id)
+                .order_by("id")
+                .all()
+            )
+        else:
+            userCard = []
+
+        usersStatement = (
+            usersStatements.objects.using("auth_db")
+            .filter(user_id=request.user.id)
+            .order_by("-created_at")
+            .all()
+        )
+
+        if request.GET.get("page") != None:
+            page_get = request.GET.get("page")
+        else:
+            page_get = "1"
+
+        month = [
+            "janvier",
+            "février",
+            "mars",
+            "avril",
+            "mai",
+            "juin",
+            "juillet",
+            "août",
+            "septembre",
+            "octobre",
+            "noveambre",
+            "décembre",
+        ]
+        dataEntrees = []
+        dataSorties = []
+
+        if request.GET.get("year"):
+            year = request.GET.get("year")
+        else:
+            today = timezone.now()
+            year = today.strftime("%Y")
+
+        for value in month:
+            if usersStatements.objects.filter(date=value + " " + year).exists():
+                usersEntreesChart = (
+                    usersStatements.objects.using("auth_db")
+                    .values("entrees")
+                    .filter(user_id=request.user.id, date=value + " " + year)
+                    .annotate(entree=Avg("entrees"))
+                    .order_by("date")
+                    .get()
+                )
+                dataEntrees.append(usersEntreesChart["entree"])
+            else:
+                dataEntrees.append(0)
+                None
+
+            if usersStatements.objects.filter(date=value + " " + year).exists():
+                usersSortiesChart = (
+                    usersStatements.objects.using("auth_db")
+                    .values("sorties")
+                    .filter(user_id=request.user.id, date=value + " " + year)
+                    .annotate(entree=Avg("sorties"))
+                    .order_by("date")
+                    .get()
+                )
+                dataSorties.append(usersSortiesChart["entree"])
+            else:
+                dataSorties.append(0)
+                None
+
+            pass
+
+        if request.GET.get("page") != None:
+            page_get = request.GET.get("page")
+        else:
+            page_get = "1"
+
+        # Qonto
+        url = "https://thirdparty.qonto.com/v2/organization"
+        headers = CaseInsensitiveDict()
+        headers["Accept"] = "application/json; charset=utf-8"
+        headers["Authorization"] = os.environ.get("KEY_QONTO")
+        resp = requests.get(url, headers=headers)
+        data_json = resp.json()
+        url3 = (
+            "https://thirdparty.qonto.com/v2/transactions?iban="
+            + data_json["organization"]["bank_accounts"][0]["iban"]
+            + "&per_page=100&current_page="
+            + page_get
+        )
+        headers3 = CaseInsensitiveDict()
+        headers3["Accept"] = "application/json; charset=utf-8"
+        headers3["Authorization"] = os.environ.get("KEY_QONTO")
+        resp3 = requests.get(url3, headers=headers3)
+        data_json4 = resp3.json()
+
+        totalPage = (data_json4["meta"]["total_count"]) / 100
+
+        list = []
+        for i in range(round(totalPage) + 1):
+            if i != 0:
+                list.append(i)
+
+        page_number = page_get
+        page_before_number = int(page_get) - 1
+        page_after_number = int(page_get) + 1
+
+        userCardCount = UsersCards.objects.using("auth_db").count()
+
+        context = {
+            "title": "Compte bancaire - Applications manager",
+            "page": "Compte bancaire",
+            "usersCards": usersCards,
+            "userCard": userCard,
+            "userCardCcaount": userCardCount,
+            "balanceQonto": data_json["organization"]["bank_accounts"][0][
+                "authorized_balance"
+            ],
+            "usersStatement": usersStatement[0:5],
+            "qontoList": data_json4["transactions"][0:100],
+            "qontoListPaginationTotalPage": list,
+            "page_number": int(page_number),
+            "page_before_number": page_before_number,
+            "page_after_number": page_after_number,
+            "total_page": round(totalPage),
+            "dataEntrees": dataEntrees,
+            "dataSorties": dataSorties,
+        }
+
+        if request.method == "POST":
+            doc_form = CreateDocForm(request.POST, request.FILES)
+            if doc_form.is_valid():
+                myfile = request.FILES["doc"]
+                fs = FileSystemStorage()
+                fs.save("static/statements/" + myfile.name, myfile)
+                doc_form.save()
+                msg = "Votre document a bien été ajoutée !"
+                context = {
+                    "title": "Compte bancaire - Applications manager",
+                    "page": "Compte bancaire",
+                    "usersCards": usersCards,
+                    "userCardCcaount": userCardCount,
+                    "userCard": userCard,
+                    "balanceQonto": data_json["organization"]["bank_accounts"][0][
+                        "authorized_balance"
+                    ],
+                    "usersStatement": usersStatement[0:5],
+                    "qontoList": data_json4["transactions"][0:100],
+                    "qontoListPaginationTotalPage": list,
+                    "page_number": int(page_number),
+                    "page_before_number": page_before_number,
+                    "page_after_number": page_after_number,
+                    "total_page": round(totalPage),
+                    "msg": msg,
+                    "msg_status": "success",
+                    "dataEntrees": dataEntrees,
+                    "dataSorties": dataSorties,
+                }
+                return render(request, "pages/account-bank.html", context)
+            else:
+                msg = "Une erreur est survenu !"
+                context = {
+                    "title": "Compte bancaire - Applications manager",
+                    "page": "Compte bancaire",
+                    "usersCards": usersCards,
+                    "userCardCcaount": userCardCount,
+                    "userCard": userCard,
+                    "balanceQonto": data_json["organization"]["bank_accounts"][0][
+                        "authorized_balance"
+                    ],
+                    "usersStatement": usersStatement[0:5],
+                    "qontoList": data_json4["transactions"][0:100],
+                    "qontoListPaginationTotalPage": list,
+                    "page_number": int(page_number),
+                    "page_before_number": page_before_number,
+                    "page_after_number": page_after_number,
+                    "total_page": round(totalPage),
+                    "msg": msg,
+                    "msg_status": "danger",
+                    "dataEntrees": dataEntrees,
+                    "dataSorties": dataSorties,
+                }
+                return render(request, "pages/account-bank.html", context)
+
+    else:
+        context = {"title": "Connexion - Applications manager"}
+        return render(request, "pages/sign-in.html", context)
+
+
+def myBakery(request):
+    if request.user.is_authenticated:
+        if request.user.is_staff:
+            # Blog
+            news = NewsBakery.objects.using("mybakery_db").order_by("-created_at").all()
+
+            # Rating
+            bakeryRatings = (
+                RatingsBakery.objects.using("mybakery_db").order_by("-created_at").all()
+            )
+
+            if request.GET.get("page") != None:
+                page_get = request.GET.get("page")
+            else:
+                page_get = int(1)
+
+            parPage = 100
+            premier = int(int(page_get) * parPage) - parPage
+
+            cursor = connections["mybakery_db"].cursor()
+            cursor.execute("call Bakerys(" + str(premier) + ", 100)")
+            bakerys = dictfetchall(cursor)
+
+            cursor.execute("call BakerysCount()")
+            bakerysCount = dictfetchall(cursor)
+
+            totalPage = math.ceil((bakerysCount[0]["counter"]) / 100)
+
+            list = []
+            for i in range(totalPage + 1):
+                if i != 0:
+                    list.append(i)
+
+            page_number = page_get
+            page_before_number = int(page_get) - 1
+            page_after_number = int(page_get) + 1
+
+            context = {
+                "title": "My bakery - Applications manager",
+                "page": "My bakery",
+                "news": news,
+                "bakerys": bakerys,
+                "bakeryListPaginationTotalPage": list,
+                "page_number": int(page_number),
+                "page_before_number": page_before_number,
+                "page_after_number": page_after_number,
+                "total_page": totalPage,
+                "bakeryRatings": bakeryRatings,
+            }
+            return render(request, "pages/my-bakery.html", context)
+
+        else:
+            return redirect("/dashboard")
+    else:
+        context = {"title": "Connexion - Applications manager"}
+        return render(request, "pages/sign-in.html", context)
+
+
+def lep(request):
+    if request.user.is_authenticated:
+        if request.user.is_staff:
+            # Blog
+            news = NewsLEP.objects.using("lep_db").order_by("-created_at").all()
+
+            context = {
+                "title": "LEP - Applications manager",
+                "page": "LEP Location entre particulier",
+                "news": news,
+            }
+            return render(request, "pages/lep.html", context)
+        else:
+            return redirect("/dashboard")
     else:
         context = {"title": "Connexion - Applications manager"}
         return render(request, "pages/sign-in.html", context)

@@ -1,7 +1,11 @@
 from django import forms
 
 from django.contrib.auth.models import User
-
+from django.contrib.auth.models import UsersCards
+from django.contrib.auth.models import usersStatements
+from django.utils import timezone
+from django.utils.translation import gettext
+from django.utils.translation import gettext_lazy as _
 
 class UpdateUserForm(forms.ModelForm):
     first_name = forms.CharField(max_length=150, required=True)
@@ -18,3 +22,44 @@ class UpdateUserForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ["first_name", "last_name", "username", "email", "bio", "facebook", "twitter", "linkedin", "github", "banner"]
+
+
+class CreateCardForm(forms.ModelForm):
+    user_id = forms.CharField(max_length=255, required=True)
+    first_name = forms.CharField(max_length=255, required=True)
+    last_name = forms.CharField(max_length=255, required=True)
+    card_number = forms.CharField(max_length=255, required=True)
+    exp_date = forms.CharField(max_length=100, required=True)
+    cvv = forms.IntegerField(required=True)
+    type = forms.CharField(max_length=255, required=True)
+    card_name = forms.CharField(max_length=255, required=True)
+    active = forms.IntegerField(required=True)
+    
+    class Meta:
+        model = UsersCards
+        fields = ["user_id", "first_name", "last_name", "card_number", "exp_date", "cvv", "type", "card_name", "active"]
+
+class UpdateCardForm(forms.ModelForm):
+    first_name = forms.CharField(max_length=255, required=True)
+    last_name = forms.CharField(max_length=255, required=True)
+    card_number = forms.CharField(max_length=255, required=True)
+    exp_date = forms.CharField(max_length=100, required=True)
+    cvv = forms.IntegerField(required=True)
+    type = forms.CharField(max_length=255, required=True)
+    card_name = forms.CharField(max_length=255, required=True)
+    
+    class Meta:
+        model = UsersCards
+        fields = ["first_name", "last_name", "card_number", "exp_date", "cvv", "type", "card_name"]
+
+class CreateDocForm(forms.ModelForm):
+    user_id = forms.CharField(max_length=255, required=True)
+    releves = forms.CharField(max_length=255, required=True)
+    date = forms.CharField(max_length=255, required=True)
+    compte = forms.CharField(max_length=255, required=True)
+    total = forms.DecimalField()
+    doc = forms.FileField()
+    
+    class Meta:
+        model = usersStatements
+        fields = ["user_id", "releves", "date", "total", "compte", "doc"]

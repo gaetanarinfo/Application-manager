@@ -17,63 +17,105 @@
     table tbody tr td {
         vertical-align: middle;
     }
+
+    .dropdown.dropdown-hover .dropdown-menu, .dropdown .dropdown-menu {
+        left: -120px;
+    }
 </style>
 
 <main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg">
     {% include 'navbar.html' %}
 
-
     <div class="container-fluid py-4">
         <div class="row">
             <div class="col-lg-8">
                 <div class="row">
-                    <div class="col-xl-6 mb-xl-0 mb-4">
-                        <div class="card bg-transparent shadow-xl">
-                            <div class="overflow-hidden position-relative border-radius-xl"
-                                style="background-image: url('{% static 'img/curved-images/curved14.jpg' %}');">
-                                <span class="mask bg-gradient-dark"></span>
-                                <div class="card-body position-relative z-index-1 p-3">
-                                    <i class="fas fa-wifi text-white p-2" aria-hidden="true"></i>
-                                    <h5 class="text-white mt-2 mb-2 pb-2">
-                                        {{ userCard.card_number }}</h5>
+                    {% for value in userCard %}
+                        <div class="col-xl-6 mb-xl-0 mb-4">
+                            <div class="card bg-transparent shadow-xl">
+                                <div class="overflow-hidden position-relative border-radius-xl"
+                                    style="background-image: url('{% static 'img/curved-images/curved14.jpg' %}');">
+                                    <span class="mask bg-gradient-dark"></span>
+                                    <div class="card-body position-relative z-index-1 p-3">
+                                        <i class="fas fa-wifi text-white p-2" aria-hidden="true"></i>
 
-                                    <p class="text-white text-sm opacity-8 mb-0">{{ userCard.card_name }}
-                                    </p>
-                                    <p class="opacity-8 mb-0 mb-2">
-                                        {% if userCard.active %}
-                                        <span class="badge bg-gradient-success">Active</span>
-                                        {% else %}
-                                        <span class="badge bg-gradient-danger">Inactive</span>
-                                        {% endif %}
-                                    </p>
-
-                                    <div class="d-flex">
-                                        <div class="d-flex">
-                                            <div class="me-4">
-                                                <p class="text-white text-sm opacity-8 mb-0 me-4">Détenteur de la carte
-                                                </p>
-                                                <h6 class="text-white mb-0">{{ userCard.first_name }}
-                                                    {{ userCard.last_name }}</h6>
-                                            </div>
-                                            <div>
-                                                <p class="text-white text-sm opacity-8 mb-0 me-4">EXP DATE</p>
-                                                <h6 class="text-white mb-0">{{ userCard.exp_date }}</h6>
-                                            </div>
-                                            <div>
-                                                <p class="text-white text-sm opacity-8 mb-0">CVV</p>
-                                                <h6 class="text-white mb-0">{{ userCard.cvv }}</h6>
-                                            </div>
+                                        <div class="d-flex align-items-center">
+                                            <h5 class="text-white mt-2 mb-2 pb-2 cardNumberRes me-3"></h5>
+                                            <span class="demasqueCard text-white mt-2 mb-2 pb-2 cursor-pointer"><i class="fa-solid fa-eye"></i></span>
                                         </div>
-                                        <div class="ms-auto w-20 d-flex align-items-end justify-content-end">
-                                            <img class="w-60 mt-2" src="{% static 'img/logos/' %}{{ userCard.type }}"
-                                                alt="logo">
+                                        
+                                        <script>
+
+                                            function convertCard(cardNumber) {
+
+                                                    cardNumber = cardNumber.replaceAll(' ', '')
+
+                                                    cardNumber = parseInt(cardNumber)
+
+                                                    if (typeof cardNumber === 'number') {
+                                                        cardNumber = cardNumber.toString()
+
+                                                        if (cardNumber.length === 16) {
+                                                            $('.cardNumberRes').html(cardNumber.slice(-4).padStart(16, '*'))
+                                                        }
+                                                    } else if (typeof cardNumber === 'string') {
+                                                        if (cardNumber.length === 16) {
+                                                            let checkEveryDigit = cardNumber.split('').every(Number)
+
+                                                            if (checkEveryDigit) {
+                                                                $('.cardNumberRes').html(cardNumber.slice(-4).padStart(16, '*'))
+                                                            }
+                                                        }
+                                                    }
+                                                }
+
+                                                convertCard('{{ value.card_number }}')
+
+                                            $(document).on('click', '.demasqueCard', function(e) {
+                                                $('.cardNumberRes').html('{{ value.card_number }}')
+                                                $(this).remove()
+                                            })
+
+                                        </script>
+
+                                        <p class="text-white text-sm opacity-8 mb-3">{{ value.card_name }}
+                                        </p>
+                                        <p class="opacity-8 mb-0 mb-3">
+                                            {% if value.active %}
+                                            <span class="badge bg-gradient-success">Active</span>
+                                            {% else %}
+                                            <span class="badge bg-gradient-danger">Inactive</span>
+                                            {% endif %}
+                                        </p>
+
+                                        <div class="d-flex">
+                                            <div class="d-flex">
+                                                <div class="me-4">
+                                                    <p class="text-white text-sm opacity-8 mb-0 me-4">Détenteur de la carte
+                                                    </p>
+                                                    <h6 class="text-white mb-0">{{ value.first_name }}
+                                                        {{ value.last_name }}</h6>
+                                                </div>
+                                                <div>
+                                                    <p class="text-white text-sm opacity-8 mb-0 me-4">EXP DATE</p>
+                                                    <h6 class="text-white mb-0">{{ value.exp_date }}</h6>
+                                                </div>
+                                                <div>
+                                                    <p class="text-white text-sm opacity-8 mb-0">CVV</p>
+                                                    <h6 class="text-white mb-0">{{ value.cvv }}</h6>
+                                                </div>
+                                            </div>
+                                            <div class="ms-auto w-20 d-flex align-items-end justify-content-end">
+                                                <img class="w-60 mt-2" src="{% static 'img/logos/' %}{{ value.type }}"
+                                                    alt="logo">
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-xl-6">
+                    {% endfor %}
+                    <div class="col-xl-6 mt-4">
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="card">
@@ -110,20 +152,32 @@
                         </div>
                     </div>
                     <div class="col-md-12 mb-lg-0 mb-4">
+
+                        <div class="col-md-6 mb-md-0 mb-4 mt-4">
+                            {% if msg %}
+                                <div class="alert alert-{{ msg_status }}" role="alert">
+                                <span class="text-white font-weight-bold">{{ msg }}</span>
+                                </div>
+                            {% endif %}
+                        </div>
+                        
                         <div class="card mt-4">
                             <div class="card-header pb-0 p-3">
                                 <div class="row">
                                     <div class="col-6 d-flex align-items-center">
                                         <h6 class="mb-0">Mode de paiement</h6>
                                     </div>
-                                    <div class="col-6 text-end">
-                                        <a class="btn bg-gradient-dark mb-0" href="javascript:;"><i class="fas fa-plus"
-                                                aria-hidden="true"></i>&nbsp;&nbsp;Ajouter une carte</a>
-                                    </div>
+                                    {% if userCardCcaount <= 1 %}
+                                        <div class="col-6 text-end">
+                                            <a class="btn bg-gradient-dark mb-0"  href="javascript:;" data-bs-toggle="modal" data-bs-target="#modal-card"><i class="fas fa-plus"
+                                                    aria-hidden="true"></i>&nbsp;&nbsp;Ajouter une carte</a>
+                                        </div>
+                                    {% endif %}
                                 </div>
                             </div>
                             <div class="card-body p-3">
                                 <div class="row">
+
                                     {% for value in usersCards %}
 
                                     <div class="col-md-6 mb-md-0 mb-4">
@@ -131,14 +185,60 @@
                                             class="card card-body border card-plain border-radius-lg d-flex align-items-center flex-row">
                                             <img class="w-10 me-3 mb-0" src="{% static 'img/logos/' %}{{ value.type }}"
                                                 alt="logo">
-                                            <h6 class="mb-0">
+                                            <h6 class="mb-0 cardNumberRes_{{ value.id }} me-3">
                                                 {{ value.card_number }}
                                             </h6>
-                                            <i class="fas fa-pencil-alt ms-auto text-dark cursor-pointer"
+                                            <span class="demasqueCard_{{ value.id }} mb-0 text-info cursor-pointer">
+                                                <i class="fa-solid fa-eye"></i>
+                                            </span>
+
+                                            <script>
+                                                function convertCard(cardNumber) {
+
+                                                    cardNumber = cardNumber.replaceAll(' ', '')
+    
+                                                    cardNumber = parseInt(cardNumber)
+    
+                                                    if (typeof cardNumber === 'number') {
+                                                        cardNumber = cardNumber.toString()
+                                                
+                                                        if (cardNumber.length === 16) {
+                                                            $('.cardNumberRes_{{ value.id }}').html(cardNumber.slice(-4).padStart(16, '*'))
+                                                            return cardNumber.slice(-4).padStart(16, '*')
+                                                        }
+                                                    } else if (typeof cardNumber === 'string') {
+                                                        if (cardNumber.length === 16) {
+                                                            let checkEveryDigit = cardNumber.split('').every(Number)
+                                                
+                                                            if (checkEveryDigit) {
+                                                                $('.cardNumberRes_{{ value.id }}').html(cardNumber.slice(-4).padStart(16, '*'))
+                                                                return cardNumber.slice(-4).padStart(16, '*')
+                                                            }
+                                                        }
+                                                    }
+                                                }
+    
+                                                convertCard('{{ value.card_number }}')
+
+                                                $(document).on('click', '.demasqueCard_{{ value.id }}', function(e) {
+                                                    $('.cardNumberRes_{{ value.id }}').html('{{ value.card_number }}')
+                                                    $(this).remove()
+                                                })
+                                            </script>
+                                            
+                                            <a href="javascript:;" class="ms-3" data-bs-toggle="modal" data-bs-target="#modal-card-{{ value.id }}">
+                                            <i class="fas fa-pencil-alt text-warning ms-auto cursor-pointer"
                                                 data-bs-toggle="tooltip" data-bs-placement="top" aria-hidden="true"
                                                 aria-label="Modifier la carte"
                                                 data-bs-original-title="Modifier la carte"></i><span
-                                                class="sr-only">Modifier la carte</span>
+                                                class="sr-only">Modifier la carte</span></a>
+
+                                            <a href="javascript:;" class="ms-3" data-bs-toggle="modal" data-bs-target="#modal-card-delete-{{ value.id }}">
+                                                <i class="fas fa-times text-danger ms-auto cursor-pointer"
+                                                    data-bs-toggle="tooltip" data-bs-placement="top" aria-hidden="true"
+                                                    aria-label="Supprimer la carte"
+                                                    data-bs-original-title="Supprimer la carte"></i><span
+                                                    class="sr-only">Supprimer la carte</span></a>
                                         </div>
                                     </div>
 
@@ -156,7 +256,10 @@
                             <div class="col-6 d-flex align-items-center">
                                 <h6 class="mb-0">Relevé de compte</h6>
                             </div>
-                            <div class="col-6 text-end">
+                            <div class="col-6 text-end d-flex" style="align-content: center;align-items: center;justify-content: flex-end;">
+                                <a class="mb-0 me-4" href="javascript:;" data-bs-toggle="modal" data-bs-target="#modal-doc"><i class="fas fa-plus text-dark ms-auto cursor-pointer" data-bs-toggle="tooltip" data-bs-placement="top" aria-hidden="true"
+                                    aria-label="Ajouter un document"
+                                    data-bs-original-title="Ajouter un document"></i></a>
                                 <a href="statements-account-bank" class="btn btn-outline-primary btn-sm mb-0">Voir
                                     tout</a>
                             </div>
@@ -185,7 +288,39 @@
                 </div>
             </div>
         </div>
-        {{qontoListPagination}}
+        
+        <div class="row">
+            <div class="col-lg-12 mt-4">
+                <div class="card z-index-2">
+                    <div class="card-header pb-0">
+                        <div class="row">
+                            <div class="col-lg-6 col-7">
+                                <h6>Entrées et sorties - Qonto</h6>
+                            </div>
+                            <div class="col-lg-6 col-5 my-auto text-end">
+                                <div class="dropdown float-lg-end pe-4">
+                                    <a class="cursor-pointer" id="dropdownTable" data-bs-toggle="dropdown"
+                                        aria-expanded="false">
+                                        <i class="fa fa-ellipsis-v text-secondary" aria-hidden="true"></i>
+                                    </a>
+                                    <ul class="dropdown-menu px-2 py-3 ms-sm-n4 ms-n5" style="left: -100px;" aria-labelledby="dropdownTable">
+                                        <li><a class="dropdown-item border-radius-md" href="?year=2023">Année 2023</a></li>
+                                        <li><a class="dropdown-item border-radius-md" href="?year=2022">Année 2022</a></li>
+                                        <li><a class="dropdown-item border-radius-md" href="?year=2021">Année 2021</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body p-3">
+                        <div class="chart">
+                            <canvas id="chart-line" class="chart-canvas" height="300"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="row">
             <div class="col-lg-12 mt-4">
                 <div class="card h-100 mb-4">
@@ -247,7 +382,7 @@
                                         <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
                                     {% endif %}
                                 {% endfor %}
-                                {% if page_number != 1 %}
+                                {% if page_number == total_page %}
                                     <li class="page-item disabled">
                                         <a class="page-link bg-gradient-dark text-white" href="javascript:;" tabindex="-1">
                                             <i class="fa fa-angle-right"></i>
@@ -274,3 +409,542 @@
 </main>
 
 {% include 'footer.html' %}
+
+<div class="modal fade" id="modal-doc" tabindex="-1" role="dialog" aria-labelledby="modal-doc" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h6 class="modal-title" id="modal-title-profil">Editer mon profil</h6>
+          <button type="button" class="btn-close text-dark" data-bs-dismiss="modal" aria-label="Fermer">
+            <span aria-hidden="true">×</span>
+          </button>
+        </div>
+        <form role="form" action="/add-doc" class="text-left needs-validation4" method="POST" novalidate enctype="multipart/form-data">
+          {% csrf_token %}
+          <input type="hidden" name="user_id" value="{{ request.user.id }}">
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <label>Nom du relevé</label>
+                        <div class="input-group mb-3">
+                        <input required type="text" name="releves" class="form-control" placeholder="Nom du relevé" aria-label="Nom du relevé"
+                            aria-describedby="releves-addon" value="septembre 2021 – {{ request.user.first_name }} {{ request.user.last_name }}">
+                        <div class="invalid-feedback">
+                            Le champs nom du relevé est obligatoire.
+                        </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label>Date du relevé</label>
+                        <div class="input-group mb-3">
+                        <input required type="text" name="date" class="form-control" placeholder="date"
+                            aria-label="Date" aria-describedby="date-addon" value="septembre 2021">
+                        <div class="invalid-feedback">
+                            Le champs date du relevé est obligatoire.
+                        </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <label>Compte banquaire</label>
+                        <div class="input-group mb-3">
+                        <input required type="text" name="compte" class="form-control" placeholder="Compte banquaire" aria-label="Compte banquaire"
+                            aria-describedby="compte-addon" value="{{ request.user.first_name }} {{ request.user.last_name }}">
+                        <div class="invalid-feedback">
+                            Le champs compte banquaire est obligatoire.
+                        </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label>Total du 01 - 31 du mois</label>
+                        <div class="input-group mb-3">
+                        <input required type="text" name="total" class="form-control" placeholder="0.00" aria-label="Total du 01 - 31 du mois"
+                            aria-describedby="total-addon">
+                        <div class="invalid-feedback">
+                            Le champs total est obligatoire.
+                        </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <label>Entrées</label>
+                        <div class="input-group mb-3">
+                        <input required type="nunmber" name="entrees" class="form-control" placeholder="2895" aria-label="Entrées"
+                            aria-describedby="compte-addon">
+                        <div class="invalid-feedback">
+                            Le champs entrées est obligatoire.
+                        </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label>Sorties</label>
+                        <div class="input-group mb-3">
+                        <input required type="nunmber" name="sorties" class="form-control" placeholder="2895" aria-label="Sorties"
+                            aria-describedby="total-addon">
+                        <div class="invalid-feedback">
+                            Le champs sorties est obligatoire.
+                        </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-12">
+                    <input required type="file" accept="application/pdf" name="doc" class="form-control">
+                    <div class="invalid-feedback">
+                        Un fichier est obligatoire.
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+              <button type="submit" class="btn bg-gradient-primary">Valider</button>
+              <button type="button" class="btn btn-link  ml-auto" data-bs-dismiss="modal">Fermer</button>
+            </div>
+        </form>
+      </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modal-card" tabindex="-1" role="dialog" aria-labelledby="modal-card" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h6 class="modal-title" id="modal-title-profil">Editer mon profil</h6>
+          <button type="button" class="btn-close text-dark" data-bs-dismiss="modal" aria-label="Fermer">
+            <span aria-hidden="true">×</span>
+          </button>
+        </div>
+        <form role="form" action="/add-card" class="text-left needs-validation" method="POST" novalidate enctype="multipart/form-data">
+          {% csrf_token %}
+          <input type="hidden" name="user_id" value="{{ request.user.id }}">
+          <input type="hidden" name="active" value="1">
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <label>Nom</label>
+                        <div class="input-group mb-3">
+                        <input required type="text" name="last_name" class="form-control" placeholder="Nom" aria-label="Nom"
+                            aria-describedby="last_name-addon" value="{{ request.user.last_name }}">
+                        <div class="invalid-feedback">
+                            Le champs nom est obligatoire.
+                        </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label>Prénom</label>
+                        <div class="input-group mb-3">
+                        <input required type="text" name="first_name" class="form-control" placeholder="Prénom"
+                            aria-label="Prénom" aria-describedby="first_name-addon" value="{{ request.user.first_name }}">
+                        <div class="invalid-feedback">
+                            Le champs prénom est obligatoire.
+                        </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <label>Numéro de la carte</label>
+                        <div class="input-group mb-3">
+                        <input required type="text" name="card_number" class="form-control" placeholder="XXXX XXXX XXXX XXXX" maxlength="19" aria-label="Numéro de la carte"
+                            aria-describedby="card_number-addon">
+                        <div class="invalid-feedback">
+                            Le champs numéro de la carte est obligatoire.
+                        </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label>Date d'expiration</label>
+                        <div class="input-group mb-3">
+                        <input required type="text" name="exp_date" class="form-control" maxlength="5" placeholder="XX/XX"
+                            aria-label="Date d'expiration" aria-describedby="exp_date-addon">
+                        <div class="invalid-feedback">
+                            Le champs date d'expiration est obligatoire.
+                        </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <label>3 derniers chiffre au dos</label>
+                        <div class="input-group mb-3">
+                        <input required type="text" name="cvv" class="form-control" placeholder="XXX" maxlength="3" aria-label="3 derniers chiffre au dos"
+                            aria-describedby="cvv-addon">
+                        <div class="invalid-feedback">
+                            Le champs cvv est obligatoire.
+                        </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label>Type de carte</label>
+                        <div class="input-group mb-3">
+                        <select required class="form-select" name="type">
+                            <option value="" selected></option>
+                            <option value="mastercard.png">Mastercard</option>
+                            <option value="visa.png">Visa</option>
+                        </select>
+                        <div class="invalid-feedback">
+                            Le champs type de carte est obligatoire.
+                        </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-12">
+                    <label>Nom de la carte</label>
+                    <div class="input-group mb-3">
+                    <input required type="text" name="card_name" class="form-control" placeholder="Nom de la carte" aria-label="Nom de la carte"
+                        aria-describedby="cvv-addon">
+                    <div class="invalid-feedback">
+                        Le champs nom de la carte est obligatoire.
+                    </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+              <button type="submit" class="btn bg-gradient-primary">Valider</button>
+              <button type="button" class="btn btn-link  ml-auto" data-bs-dismiss="modal">Fermer</button>
+            </div>
+        </form>
+      </div>
+    </div>
+</div>
+
+{% for value in userCard %}
+<div class="modal fade" id="modal-card-{{ value.id }}" tabindex="-1" role="dialog" aria-labelledby="modal-card-{{ value.id }}" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h6 class="modal-title" id="modal-title-profil">Editer ma carte {{ value.card_name  }}</h6>
+          <button type="button" class="btn-close text-dark" data-bs-dismiss="modal" aria-label="Fermer">
+            <span aria-hidden="true">×</span>
+          </button>
+        </div>
+        <form role="form" action="/update-card" class="text-left needs-validation2" method="POST" novalidate enctype="multipart/form-data">
+          {% csrf_token %}
+          <input type="hidden" name="id" value="{{ value.id }}">
+ 
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <label>Nom</label>
+                        <div class="input-group mb-3">
+                        <input required type="text" name="last_name" class="form-control" placeholder="Nom" aria-label="Nom"
+                            aria-describedby="last_name-addon" value="{{ value.last_name }}">
+                        <div class="invalid-feedback">
+                            Le champs nom est obligatoire.
+                        </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label>Prénom</label>
+                        <div class="input-group mb-3">
+                        <input required type="text" name="first_name" class="form-control" placeholder="Prénom"
+                            aria-label="Prénom" aria-describedby="first_name-addon" value="{{ value.first_name }}">
+                        <div class="invalid-feedback">
+                            Le champs prénom est obligatoire.
+                        </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <label>Numéro de la carte</label>
+                        <div class="input-group mb-3">
+                        <input required type="text" name="card_number" class="form-control" placeholder="XXXX XXXX XXXX XXXX" maxlength="19" aria-label="Numéro de la carte"
+                            aria-describedby="card_number-addon" value="{{ value.card_number }}">
+                        <div class="invalid-feedback">
+                            Le champs numéro de la carte est obligatoire.
+                        </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label>Date d'expiration</label>
+                        <div class="input-group mb-3">
+                        <input required type="text" name="exp_date" class="form-control" maxlength="5" placeholder="XX/XX"
+                            aria-label="Date d'expiration" aria-describedby="exp_date-addon" value="{{ value.exp_date }}">
+                        <div class="invalid-feedback">
+                            Le champs date d'expiration est obligatoire.
+                        </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <label>3 derniers chiffre au dos</label>
+                        <div class="input-group mb-3">
+                        <input required type="text" name="cvv" class="form-control" placeholder="XXX" maxlength="3" aria-label="3 derniers chiffre au dos"
+                            aria-describedby="cvv-addon" value="{{ value.cvv }}">
+                        <div class="invalid-feedback">
+                            Le champs cvv est obligatoire.
+                        </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label>Type de carte</label>
+                        <div class="input-group mb-3">
+                        <select required class="form-select" name="type">
+                            <option value=""></option>
+                            <option value="mastercard.png" {% if value.type == "mastercard.png" %}selected{% endif %}>Mastercard</option>
+                            <option value="visa.png" {% if value.type == "visa.png" %}selected{% endif %}>Visa</option>
+                        </select>
+                        <div class="invalid-feedback">
+                            Le champs type de carte est obligatoire.
+                        </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-12">
+                    <label>Nom de la carte</label>
+                    <div class="input-group mb-3">
+                    <input required type="text" name="card_name" class="form-control" placeholder="Nom de la carte" aria-label="Nom de la carte"
+                        aria-describedby="cvv-addon" value="{{ value.card_name }}">
+                    <div class="invalid-feedback">
+                        Le champs nom de la carte est obligatoire.
+                    </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+              <button type="submit" class="btn bg-gradient-primary">Valider</button>
+              <button type="button" class="btn btn-link  ml-auto" data-bs-dismiss="modal">Fermer</button>
+            </div>
+        </form>
+      </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modal-card-delete-{{ value.id }}" tabindex="-1" role="dialog" aria-labelledby="modal-card-delete-{{ value.id }}" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h6 class="modal-title" id="modal-title-profil">Supprimer ma carte {{ value.card_name  }}</h6>
+          <button type="button" class="btn-close text-dark" data-bs-dismiss="modal" aria-label="Fermer">
+            <span aria-hidden="true">×</span>
+          </button>
+        </div>
+        <form role="form" action="/delete-card" class="text-left needs-validation3" method="POST" novalidate enctype="multipart/form-data">
+          {% csrf_token %}
+          <input type="hidden" name="id" value="{{ value.id }}">
+ 
+            <div class="modal-body">
+               
+                <h5 class="text-danger text-center mb-0">Voulez-vous vraiment supprimer cette carte ?</h5>
+
+            </div>
+
+            <div class="modal-footer">
+              <button type="submit" class="btn bg-gradient-primary">Valider</button>
+              <button type="button" class="btn btn-link  ml-auto" data-bs-dismiss="modal">Fermer</button>
+            </div>
+        </form>
+      </div>
+    </div>
+</div>
+{% endfor %}
+
+<script>
+
+// Fetch all the forms we want to apply custom Bootstrap validation styles to
+var forms = document.querySelectorAll(".needs-validation");
+
+// Loop over them and prevent submission
+Array.prototype.slice.call(forms).forEach(function (form) {
+    form.addEventListener(
+    "submit",
+    function (event) {
+        if (!form.checkValidity()) {
+        event.preventDefault();
+        event.stopPropagation();
+        }else{
+        location.href = "/account-bank"
+        }
+
+        form.classList.add("was-validated");
+
+
+    },
+    false
+    );
+});
+
+// Fetch all the forms we want to apply custom Bootstrap validation styles to
+var forms = document.querySelectorAll(".needs-validation2");
+
+// Loop over them and prevent submission
+Array.prototype.slice.call(forms).forEach(function (form) {
+    form.addEventListener(
+    "submit",
+    function (event) {
+        if (!form.checkValidity()) {
+        event.preventDefault();
+        event.stopPropagation();
+        }else{
+            location.href = "/account-bank"
+        }
+
+        form.classList.add("was-validated");
+
+    },
+    false
+    );
+});
+
+var forms = document.querySelectorAll(".needs-validation3");
+
+// Loop over them and prevent submission
+Array.prototype.slice.call(forms).forEach(function (form) {
+    form.addEventListener(
+    "submit",
+    function (event) {
+        location.href = "/account-bank"
+    },
+    false
+    );
+});
+
+// Fetch all the forms we want to apply custom Bootstrap validation styles to
+var forms = document.querySelectorAll(".needs-validation4");
+
+// Loop over them and prevent submission
+Array.prototype.slice.call(forms).forEach(function (form) {
+    form.addEventListener(
+    "submit",
+    function (event) {
+        if (!form.checkValidity()) {
+        event.preventDefault();
+        event.stopPropagation();
+    }else{
+        location.href = "/account-bank"
+    }
+        form.classList.add("was-validated");
+    },
+    false
+    );
+});
+
+var ctx2 = document.getElementById("chart-line").getContext("2d");
+var gradientStroke1 = ctx2.createLinearGradient(0, 230, 0, 50);
+
+gradientStroke1.addColorStop(1, 'rgba(203,12,159,0.2)');
+gradientStroke1.addColorStop(0.2, 'rgba(72,72,176,0.0)');
+gradientStroke1.addColorStop(0, 'rgba(203,12,159,0)'); //purple colors
+
+var gradientStroke2 = ctx2.createLinearGradient(0, 230, 0, 50);
+
+gradientStroke2.addColorStop(1, 'rgba(20,23,39,0.2)');
+gradientStroke2.addColorStop(0.2, 'rgba(72,72,176,0.0)');
+gradientStroke2.addColorStop(0, 'rgba(20,23,39,0)'); //purple colors
+
+new Chart(ctx2, {
+    type: "line",
+    data: {
+    labels: ["Janvier",
+    "Février",
+    "mars",
+    "Avril",
+    "Mai",
+    "Juin",
+    "Juillet",
+    "Août",
+    "Septembre",
+    "Octobre",
+    "Noveambre",
+    "Décembre"],
+    datasets: [
+        {
+        label: "Entrées",
+        tension: 0.4,
+        borderWidth: 0,
+        pointRadius: 0,
+        borderColor: "#3A416F",
+        borderWidth: 3,
+        backgroundColor: gradientStroke2,
+        fill: true,
+        data: {{ dataEntrees }},
+        maxBarThickness: 6
+        },
+        {
+            label: "Sorties",
+            tension: 0.4,
+            borderWidth: 0,
+            pointRadius: 0,
+            borderColor: "#cb0c9f",
+            borderWidth: 3,
+            backgroundColor: gradientStroke1,
+            fill: true,
+            data: {{ dataSorties }},
+            maxBarThickness: 6
+            },
+    ],
+    },
+    options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+        legend: {
+        display: false,
+        }
+    },
+    interaction: {
+        intersect: false,
+        mode: 'index',
+    },
+    scales: {
+        y: {
+        grid: {
+            drawBorder: false,
+            display: true,
+            drawOnChartArea: true,
+            drawTicks: false,
+            borderDash: [5, 5]
+        },
+        ticks: {
+            display: true,
+            padding: 10,
+            color: '#b2b9bf',
+            font: {
+            size: 11,
+            family: "Open Sans",
+            style: 'normal',
+            lineHeight: 2
+            },
+        }
+        },
+        x: {
+        grid: {
+            drawBorder: false,
+            display: false,
+            drawOnChartArea: false,
+            drawTicks: false,
+            borderDash: [5, 5]
+        },
+        ticks: {
+            display: true,
+            color: '#b2b9bf',
+            padding: 20,
+            font: {
+            size: 11,
+            family: "Open Sans",
+            style: 'normal',
+            lineHeight: 2
+            },
+        }
+        },
+    },
+    },
+});
+
+</script>
+

@@ -5,7 +5,7 @@
     <i class="fas fa-times p-3 cursor-pointer text-secondary opacity-5 position-absolute end-0 top-0 d-none d-xl-none"
       aria-hidden="true" id="iconSidenav"></i>
 
-    <a class="navbar-brand m-0" href="/">
+    <a class="navbar-brand m-0" href="/dashboard">
       <img src="{% static 'img/logo-ct-dark.png' %}" class="navbar-brand-img h-100" alt="main_logo" />
       <span class="ms-1 font-weight-bold">Applications manager</span>
     </a>
@@ -41,6 +41,8 @@
           <span class="nav-link-text ms-1">Accueil</span>
         </a>
       </li>
+
+      {% if request.user.is_staff %}
 
       <li class="nav-item mt-3">
         <h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">
@@ -138,6 +140,8 @@
           <span class="nav-link-text ms-1">My Backery</span>
         </a>
       </li>
+      {% endif %}
+
 
       <li class="nav-item mt-3">
         <h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">
@@ -174,7 +178,8 @@
           <span class="nav-link-text ms-1">Mon profil</span>
         </a>
       </li>
-  
+
+      {% if request.user.is_staff %}
       <li class="nav-item">
         <a class="nav-link {% if request.get_full_path == '/account-bank' %} active {% endif %}" href="/account-bank">
           <div
@@ -201,6 +206,7 @@
           <span class="nav-link-text ms-1">Mes comptes</span>
         </a>
       </li>
+      {% endif %}
     </ul>
   </div>
 </aside>
