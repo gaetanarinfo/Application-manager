@@ -40,8 +40,8 @@
                                         <i class="fas fa-wifi text-white p-2" aria-hidden="true"></i>
 
                                         <div class="d-flex align-items-center">
-                                            <h5 class="text-white mt-2 mb-2 pb-2 cardNumberRes me-3"></h5>
-                                            <span class="demasqueCard text-white mt-2 mb-2 pb-2 cursor-pointer"><i class="fa-solid fa-eye"></i></span>
+                                            <h5 class="text-white mt-2 mb-2 pb-2 cardNumberRes-{{ value.id }} me-3"></h5>
+                                            <span class="demasqueCard-{{ value.id }} text-white mt-2 mb-2 pb-2 cursor-pointer"><i class="fa-solid fa-eye"></i></span>
                                         </div>
                                         
                                         <script>
@@ -56,14 +56,14 @@
                                                         cardNumber = cardNumber.toString()
 
                                                         if (cardNumber.length === 16) {
-                                                            $('.cardNumberRes').html(cardNumber.slice(-4).padStart(16, '*'))
+                                                            $('.cardNumberRes-{{ value.id }}').html(cardNumber.slice(-4).padStart(16, '*'))
                                                         }
                                                     } else if (typeof cardNumber === 'string') {
                                                         if (cardNumber.length === 16) {
                                                             let checkEveryDigit = cardNumber.split('').every(Number)
 
                                                             if (checkEveryDigit) {
-                                                                $('.cardNumberRes').html(cardNumber.slice(-4).padStart(16, '*'))
+                                                                $('.cardNumberRes-{{ value.id }}').html(cardNumber.slice(-4).padStart(16, '*'))
                                                             }
                                                         }
                                                     }
@@ -71,8 +71,8 @@
 
                                                 convertCard('{{ value.card_number }}')
 
-                                            $(document).on('click', '.demasqueCard', function(e) {
-                                                $('.cardNumberRes').html('{{ value.card_number }}')
+                                            $(document).on('click', '.demasqueCard-{{ value.id }}', function(e) {
+                                                $('.cardNumberRes-{{ value.id }}').html('{{ value.card_number }}')
                                                 $(this).remove()
                                             })
 
@@ -414,7 +414,7 @@
     <div class="modal-dialog modal-lg modal-dialog-centered modal-" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h6 class="modal-title" id="modal-title-profil">Editer mon profil</h6>
+          <h6 class="modal-title" id="modal-title-profil">Ajouter un document</h6>
           <button type="button" class="btn-close text-dark" data-bs-dismiss="modal" aria-label="Fermer">
             <span aria-hidden="true">×</span>
           </button>

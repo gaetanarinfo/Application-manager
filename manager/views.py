@@ -18,6 +18,7 @@ from django.contrib.auth.models import (
     NewsBakery,
     RatingsBakery,
     NewsLEP,
+    Salarys,
 )
 from django.contrib import messages
 import requests
@@ -27,6 +28,7 @@ import os
 from .forms import UpdateUserForm
 from .forms import UpdateCardForm
 from .forms import CreateDocForm
+from .forms import CreateDocSalarysForm
 from datetime import datetime
 from django.utils import timezone
 from django.db import connections
@@ -421,7 +423,7 @@ def accountBank(request):
                 userCard = (
                     UsersCards.objects.using("auth_db")
                     .filter(user_id=request.user.id)
-                    .order_by("id")
+                    .order_by("-id")
                     .all()
                 )
             else:
@@ -589,7 +591,7 @@ def addCard(request):
             userCard = (
                 UsersCards.objects.using("auth_db")
                 .filter(user_id=request.user.id)
-                .order_by("id")
+                .order_by("-id")
                 .all()
             )
         else:
@@ -788,7 +790,7 @@ def updateCard(request):
             userCard = (
                 UsersCards.objects.using("auth_db")
                 .filter(user_id=request.user.id)
-                .order_by("id")
+                .order_by("-id")
                 .all()
             )
         else:
@@ -991,7 +993,7 @@ def deleteCard(request):
             userCard = (
                 UsersCards.objects.using("auth_db")
                 .filter(user_id=request.user.id)
-                .order_by("id")
+                .order_by("-id")
                 .all()
             )
         else:
@@ -1190,7 +1192,7 @@ def addDoc(request):
             userCard = (
                 UsersCards.objects.using("auth_db")
                 .filter(user_id=request.user.id)
-                .order_by("id")
+                .order_by("-id")
                 .all()
             )
         else:
@@ -1451,6 +1453,312 @@ def lep(request):
             return render(request, "pages/lep.html", context)
         else:
             return redirect("/dashboard")
+    else:
+        context = {"title": "Connexion - Applications manager"}
+        return render(request, "pages/sign-in.html", context)
+
+
+def salarys(request):
+    if request.user.is_authenticated:
+        if request.user.is_staff:
+            # Salaires
+            salarysList = Salarys.objects.using("auth_db").order_by("-id").all()
+
+            month = [
+                "janvier",
+                "février",
+                "mars",
+                "avril",
+                "mai",
+                "juin",
+                "juillet",
+                "août",
+                "septembre",
+                "octobre",
+                "noveambre",
+                "décembre",
+            ]
+            dataEntrees = []
+            dataSorties = []
+
+            if request.GET.get("year"):
+                year = request.GET.get("year")
+            else:
+                today = timezone.now()
+                year = today.strftime("%Y")
+
+            for value in month:
+                if Salarys.objects.filter(date=value + " " + year).exists():
+                    usersEntreesChart = (
+                        Salarys.objects.using("auth_db")
+                        .values("brut")
+                        .filter(user_id=request.user.id, date=value + " " + year)
+                        .annotate(entree=Avg("brut"))
+                        .order_by("date")
+                        .get()
+                    )
+                    dataEntrees.append(usersEntreesChart["brut"])
+                else:
+                    dataEntrees.append(0)
+                    None
+
+                if Salarys.objects.filter(date=value + " " + year).exists():
+                    usersSortiesChart = (
+                        Salarys.objects.using("auth_db")
+                        .values("net")
+                        .filter(user_id=request.user.id, date=value + " " + year)
+                        .annotate(entree=Avg("net"))
+                        .order_by("date")
+                        .get()
+                    )
+                    dataSorties.append(usersSortiesChart["net"])
+                else:
+                    dataSorties.append(0)
+                    None
+
+                pass
+
+            dataEntrees2 = []
+            dataSorties2 = []
+
+            if request.GET.get("year"):
+                year = request.GET.get("year")
+            else:
+                today = timezone.now()
+                year = today.strftime("%Y")
+
+            for value in month:
+                if Salarys.objects.filter(date=value + " " + year).exists():
+                    usersEntreesChart = (
+                        Salarys.objects.using("auth_db")
+                        .values("hours")
+                        .filter(user_id=request.user.id, date=value + " " + year)
+                        .annotate(entree=Avg("hours"))
+                        .order_by("date")
+                        .get()
+                    )
+                    dataEntrees2.append(usersEntreesChart["hours"])
+                else:
+                    dataEntrees2.append(0)
+                    None
+
+                if Salarys.objects.filter(date=value + " " + year).exists():
+                    usersSortiesChart = (
+                        Salarys.objects.using("auth_db")
+                        .values("total_hours")
+                        .filter(user_id=request.user.id, date=value + " " + year)
+                        .annotate(entree=Avg("total_hours"))
+                        .order_by("date")
+                        .get()
+                    )
+                    dataSorties2.append(usersSortiesChart["total_hours"])
+                else:
+                    dataSorties2.append(0)
+                    None
+
+                pass
+            
+            # Total par année
+            totalHours = (
+                Salarys.objects.using("auth_db")
+                .filter(date__contains=year)
+                .aggregate(Sum("hours", distinct=False))
+            )
+            
+            totalBrut = (
+                Salarys.objects.using("auth_db")
+                .filter(date__contains=year)
+                .aggregate(Sum("brut", distinct=False))
+            )
+            
+            totalNet = (
+                Salarys.objects.using("auth_db")
+                .filter(date__contains=year)
+                .aggregate(Sum("net", distinct=False))
+            )
+
+            context = {
+                "title": "Salaires - Applications manager",
+                "page": "Salaires",
+                "salarysList": salarysList,
+                "dataEntrees": dataEntrees,
+                "dataSorties": dataSorties,
+                "dataEntrees2": dataEntrees2,
+                "dataSorties2": dataSorties2,
+                "totalHours": totalHours["hours__sum"],
+                "totalBrut": totalBrut["brut__sum"],
+                "totalNet": totalNet["net__sum"],
+                "year": year,
+            }
+            return render(request, "pages/salarys.html", context)
+        else:
+            return redirect("/dashboard")
+    else:
+        context = {"title": "Connexion - Applications manager"}
+        return render(request, "pages/sign-in.html", context)
+
+
+def addDocSalarys(request):
+    if request.user.is_staff:
+        # Salaires
+        salarysList = Salarys.objects.using("auth_db").order_by("-id").all()
+
+        month = [
+            "janvier",
+            "février",
+            "mars",
+            "avril",
+            "mai",
+            "juin",
+            "juillet",
+            "août",
+            "septembre",
+            "octobre",
+            "noveambre",
+            "décembre",
+        ]
+        dataEntrees = []
+        dataSorties = []
+
+        if request.GET.get("year"):
+            year = request.GET.get("year")
+        else:
+            today = timezone.now()
+            year = today.strftime("%Y")
+
+        for value in month:
+            if Salarys.objects.filter(date=value + " " + year).exists():
+                usersEntreesChart = (
+                    Salarys.objects.using("auth_db")
+                    .values("brut")
+                    .filter(user_id=request.user.id, date=value + " " + year)
+                    .annotate(entree=Avg("brut"))
+                    .order_by("date")
+                    .get()
+                )
+                dataEntrees.append(usersEntreesChart["brut"])
+            else:
+                dataEntrees.append(0)
+                None
+
+            if Salarys.objects.filter(date=value + " " + year).exists():
+                usersSortiesChart = (
+                    Salarys.objects.using("auth_db")
+                    .values("net")
+                    .filter(user_id=request.user.id, date=value + " " + year)
+                    .annotate(entree=Avg("net"))
+                    .order_by("date")
+                    .get()
+                )
+                dataSorties.append(usersSortiesChart["net"])
+            else:
+                dataSorties.append(0)
+                None
+
+            pass
+
+        dataEntrees2 = []
+        dataSorties2 = []
+
+        if request.GET.get("year"):
+            year = request.GET.get("year")
+        else:
+            today = timezone.now()
+            year = today.strftime("%Y")
+
+        for value in month:
+            if Salarys.objects.filter(date=value + " " + year).exists():
+                usersEntreesChart = (
+                    Salarys.objects.using("auth_db")
+                    .values("hours")
+                    .filter(user_id=request.user.id, date=value + " " + year)
+                    .annotate(entree=Avg("hours"))
+                    .order_by("date")
+                    .get()
+                )
+                dataEntrees2.append(usersEntreesChart["hours"])
+            else:
+                dataEntrees2.append(0)
+                None
+
+            if Salarys.objects.filter(date=value + " " + year).exists():
+                usersSortiesChart = (
+                    Salarys.objects.using("auth_db")
+                    .values("total_hours")
+                    .filter(user_id=request.user.id, date=value + " " + year)
+                    .annotate(entree=Avg("total_hours"))
+                    .order_by("date")
+                    .get()
+                )
+                dataSorties2.append(usersSortiesChart["total_hours"])
+            else:
+                dataSorties2.append(0)
+                None
+
+            pass
+        
+        # Total par année
+        totalHours = (
+            Salarys.objects.using("auth_db")
+            .filter(date__contains=year)
+            .aggregate(Sum("hours", distinct=False))
+        )
+        
+        totalBrut = (
+            Salarys.objects.using("auth_db")
+            .filter(date__contains=year)
+            .aggregate(Sum("brut", distinct=False))
+        )
+        
+        totalNet = (
+            Salarys.objects.using("auth_db")
+            .filter(date__contains=year)
+            .aggregate(Sum("net", distinct=False))
+        )
+
+        if request.method == "POST":
+            doc_form = CreateDocSalarysForm(request.POST, request.FILES)
+            if doc_form.is_valid():
+                myfile = request.FILES["file"]
+                fs = FileSystemStorage()
+                fs.save("static/salarys/" + myfile.name, myfile)
+                doc_form.save()
+                msg = "Votre document a bien été ajoutée !"
+                context = {
+                    "title": "Salaires - Applications manager",
+                    "page": "Salaires",
+                    "salarysList": salarysList,
+                    "msg": msg,
+                    "msg_status": "success",
+                    "dataEntrees": dataEntrees,
+                    "dataSorties": dataSorties,
+                    "dataEntrees2": dataEntrees2,
+                    "dataSorties2": dataSorties2,
+                    "totalHours": totalHours["hours__sum"],
+                    "totalBrut": totalBrut["brut__sum"],
+                    "totalNet": totalNet["net__sum"],
+                    "year": year,
+                }
+                return render(request, "pages/salarys.html", context)
+            else:
+                msg = "Une erreur est survenu !"
+                context = {
+                    "title": "Salaires - Applications manager",
+                    "page": "Salaires",
+                    "salarysList": salarysList,
+                    "msg": msg,
+                    "msg_status": "danger",
+                    "dataEntrees": dataEntrees,
+                    "dataSorties": dataSorties,
+                    "dataEntrees2": dataEntrees2,
+                    "dataSorties2": dataSorties2,
+                    "totalHours": totalHours["hours__sum"],
+                    "totalBrut": totalBrut["brut__sum"],
+                    "totalNet": totalNet["net__sum"],
+                    "year": year,
+                }
+                return render(request, "pages/salarys.html", context)
+
     else:
         context = {"title": "Connexion - Applications manager"}
         return render(request, "pages/sign-in.html", context)

@@ -12,9 +12,11 @@ urlpatterns = [
     path("portfolio", views.portfolio, name="portfolio"),
     path("my-bakery", views.myBakery, name="my-bakery"),
     path("lep", views.lep, name="lep"),
+    path("salarys", views.salarys, name="salarys"),
     path('logout', views.logout_user, name='logout'),
     path("add-card", views.addCard, name="add-card"),
     path("update-card", views.updateCard, name="update-card"),
     path("delete-card", views.deleteCard, name="delete-card"),
     path("add-doc", views.addDoc, name="add-doc"),
+    path("add-salarys-doc", views.addDocSalarys, name="add-salarys-doc"),
 ]

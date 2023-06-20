@@ -2,6 +2,7 @@ from django import forms
 
 from django.contrib.auth.models import User
 from django.contrib.auth.models import UsersCards
+from django.contrib.auth.models import Salarys
 from django.contrib.auth.models import usersStatements
 from django.utils import timezone
 from django.utils.translation import gettext
@@ -63,3 +64,17 @@ class CreateDocForm(forms.ModelForm):
     class Meta:
         model = usersStatements
         fields = ["user_id", "releves", "date", "total", "compte", "doc"]
+        
+class CreateDocSalarysForm(forms.ModelForm):
+    user_id = forms.IntegerField(required=True)
+    entreprise = forms.CharField(max_length=255, required=True)
+    date = forms.CharField(max_length=255, required=True)
+    net = forms.IntegerField(required=True)
+    brut = forms.IntegerField(required=True)
+    hours = forms.CharField(max_length=255, required=True)
+    total_hours = forms.CharField(max_length=255, required=True)
+    file = forms.FileField()
+    
+    class Meta:
+        model = Salarys
+        fields = ["user_id", "entreprise", "file", "net", "brut", "hours", "total_hours", "date"]        
